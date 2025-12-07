@@ -151,13 +151,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: colors.yellow.withValues(alpha: 0.2),
+                    color: colors.primary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: PhosphorIcon(
                     PhosphorIcons.envelopeSimple(PhosphorIconsStyle.fill),
                     size: 60,
-                    color: colors.yellowDark,
+                    color: colors.primaryDark,
                   ),
                 ),
               )
@@ -274,7 +274,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+                        valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                       ),
                     ),
                     const SizedBox(width: 12),

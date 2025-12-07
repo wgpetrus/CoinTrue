@@ -310,12 +310,13 @@ class TransactionController extends ChangeNotifier {
       }
       
       // 2. Calcular conversão
-      final conversionRate = toPrice / fromPrice;
-      final convertedAmount = fromQuantity * conversionRate;
+      // Primeiro converte para valor em BRL, depois para a cripto de destino
+      final valueInBRL = fromQuantity * fromPrice;
+      final convertedAmount = valueInBRL / toPrice;
       final fee = convertedAmount * (feePercent / 100);
       final finalToQuantity = convertedAmount - fee;
       
-      debugPrint('TransactionController: Conversion rate: $conversionRate');
+      debugPrint('TransactionController: Value in BRL: R\$ ${valueInBRL.toStringAsFixed(2)}');
       debugPrint('TransactionController: Converted amount: $convertedAmount');
       debugPrint('TransactionController: Fee ($feePercent%): $fee');
       debugPrint('TransactionController: Final amount: $finalToQuantity');

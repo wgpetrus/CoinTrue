@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/asset_loader.dart';
 
 /// Enum para identificar o provedor de autenticação social
 enum SocialProvider {
@@ -79,25 +80,18 @@ class SocialLoginButton extends StatelessWidget {
 
   /// Constrói o estado normal do botão com logo e texto
   Widget _buildNormalState(String logoAsset, String buttonText, AppColors colors) {
+    final providerName = provider == SocialProvider.google ? 'Google' : 'Apple';
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         // Logo do provedor
-        Image.asset(
-          logoAsset,
+        AssetLoader.loadSocialLogo(
+          assetPath: logoAsset,
+          providerName: providerName,
           width: 24,
           height: 24,
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback caso a imagem não carregue
-            return Icon(
-              provider == SocialProvider.google
-                  ? Icons.g_mobiledata
-                  : Icons.apple,
-              size: 24,
-              color: colors.darkGray,
-            );
-          },
         ),
         const SizedBox(width: 12),
         // Texto do botão

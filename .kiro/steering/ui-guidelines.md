@@ -11,17 +11,19 @@ Este guia define o design system do aplicativo CoinTrue.
 ### Cores
 
 #### Cores Principais
-- **Amarelo (#FFE70F)**: Cor primária - fundos de botões, cards, bordas
-- **Amarelo Escuro (#FFC107)**: Para ícones e textos em fundo branco (melhor contraste)
+- **Azul Primário (#2563EB)**: Cor primária - fundos de botões, cards, bordas
+- **Azul Escuro (#1E40AF)**: Para ícones e textos em fundo branco (melhor contraste)
+- **Roxo Secundário (#7C3AED)**: Elementos secundários, gradientes
 - **Cinza Escuro (#545454)**: Textos primários e títulos
 - **Cinza Médio (#9E9E9E)**: Textos secundários e subtítulos
 - **Cinza Claro (#F5F5F5)**: Backgrounds de cards e containers
 - **Branco (#FFFFFF)**: Background principal das telas
 
 **IMPORTANTE - Contraste:**
-- ✅ Usar **Amarelo Escuro** para ícones e textos em fundo branco
-- ✅ Usar **Amarelo Claro** para fundos de botões e cards
-- ❌ NUNCA usar Amarelo Claro para ícones/textos em fundo branco (contraste ruim)
+- ✅ Usar **Azul Escuro** para ícones e textos em fundo branco
+- ✅ Usar **Azul Primário** para fundos de botões e cards
+- ✅ Usar **Roxo Secundário** para elementos de destaque e gradientes
+- ✅ Excelente contraste em todas as combinações (WCAG AAA)
 
 #### Cores de Status
 - **Verde (#4CAF50)**: Valores positivos, compras, sucesso
@@ -37,14 +39,22 @@ Este guia define o design system do aplicativo CoinTrue.
 ### Botões
 
 #### Botões Primários (Ação Principal)
-- Fundo: **AMARELO (#FFE70F)**
-- Texto: **Branco**
+- Fundo: **AZUL PRIMÁRIO (#2563EB)**
+- Texto: **BRANCO (#FFFFFF)** - SEMPRE usar branco para contraste
 - Elevação: **0** (sem sombra)
 - Border radius: **16px** (mais arredondado)
 - Altura: **56px**
 - Padding horizontal: **24px**
 - Texto: Branco, peso 600, tamanho 16px
 - Exemplo: Botão "+" flutuante, botões de ação
+
+**IMPORTANTE:**
+```dart
+ElevatedButton.styleFrom(
+  backgroundColor: colors.primary,
+  foregroundColor: colors.white, // SEMPRE branco
+)
+```
 
 #### Botões Secundários (Login Social, etc)
 - Fundo: **BRANCO**
@@ -57,7 +67,7 @@ Este guia define o design system do aplicativo CoinTrue.
 
 #### Botões de Filtro/Tabs
 - Fundo normal: **Transparente ou Cinza muito claro (#FAFAFA)**
-- Fundo ativo: **AMARELO (#FFE70F)**
+- Fundo ativo: **AZUL PRIMÁRIO (#2563EB)**
 - Texto normal: **Cinza médio (#9E9E9E)**
 - Texto ativo: **Branco**
 - Border radius: **12px**
@@ -220,7 +230,7 @@ Fonte padrão: **System Font** (San Francisco no iOS, Roboto no Android)
 #### Input Fields
 - Background: **Cinza muito claro (#F5F5F5)**
 - Borda: **0** (sem borda no estado normal)
-- Borda focada: **Amarela (#FFE70F), 2px**
+- Borda focada: **Azul Primário (#2563EB), 2px**
 - Border radius: **16px**
 - Altura: **48px** a **56px**
 - Padding horizontal: **16px**
@@ -243,10 +253,10 @@ Fonte padrão: **System Font** (San Francisco no iOS, Roboto no Android)
 - Border radius: **0** (ocupa largura total)
 - Ícones: **24x24px**
 - Cor ícone inativo: Cinza médio (#9E9E9E)
-- Cor ícone ativo: Amarelo (#FFE70F)
+- Cor ícone ativo: Azul Primário (#2563EB)
 - Label: 12px, peso 500
 - Cor label inativo: Cinza médio
-- Cor label ativo: Amarelo
+- Cor label ativo: Azul Primário
 - Espaçamento entre ícones: Distribuído igualmente
 
 #### Top App Bar
@@ -262,7 +272,7 @@ Fonte padrão: **System Font** (San Francisco no iOS, Roboto no Android)
 
 #### Overlay de Loading
 - Background: Preto com alpha 0.5
-- Spinner: Amarelo (#FFE70F)
+- Spinner: Azul Primário (#2563EB)
 - Texto: Branco, 16px
 
 #### Loading em Botões
@@ -338,7 +348,7 @@ Fonte padrão: **System Font** (San Francisco no iOS, Roboto no Android)
 ### Gráficos
 
 #### Gráfico de Linha
-- Cor da linha: Azul (#2196F3) ou Amarelo (#FFE70F)
+- Cor da linha: Azul Primário (#2563EB) ou Roxo Secundário (#7C3AED)
 - Espessura: 2px
 - Background do gráfico: Gradiente suave da cor da linha (alpha 0.1 no topo, 0 embaixo)
 - Altura: 120px a 200px
@@ -365,30 +375,47 @@ Fonte padrão: **System Font** (San Francisco no iOS, Roboto no Android)
 ## Regras Importantes
 
 1. **NUNCA** usar círculos coloridos ao redor de logos do app
-2. **SEMPRE** usar fundos amarelos em botões primários de ação
+2. **SEMPRE** usar fundos azuis em botões primários de ação
 3. **SEMPRE** usar border radius de 16px em cards e botões (mais arredondado)
-4. **SEMPRE** usar as cores definidas em `AppConstants.colors`
+4. **SEMPRE** usar as cores definidas em `AppConstants.colors` (primary, primaryDark, secondary)
 5. **SEMPRE** usar espaçamentos múltiplos de 4px
 6. **SEMPRE** usar ícones de criptomoedas como círculos coloridos com letras
 7. **SEMPRE** mostrar variações de preço com cores (verde +, vermelho -)
 8. **SEMPRE** manter elevação 0 em botões (design flat)
 9. **SEMPRE** usar sombras suaves apenas em cards principais
-10. **SEMPRE** garantir bom contraste entre texto e fundo
+10. **SEMPRE** garantir bom contraste entre texto e fundo (WCAG AAA)
 11. **SEMPRE** usar fonte system (San Francisco/Roboto)
 12. **SEMPRE** alinhar elementos com grid de 4px
+13. **SEMPRE** usar gradiente azul→roxo em cards hero e elementos de destaque
 
 ## Arquivos de Referência
 
-- `lib/utils/constants.dart` - Cores, strings e configurações
+- `lib/utils/constants.dart` - Cores (primary, primaryDark, secondary), strings e configurações
 - `lib/views/widgets/social_login_button.dart` - Exemplo de botão bem implementado
 - `lib/views/screens/splash_screen.dart` - Exemplo de logo sem decoração
 - `lib/views/screens/login_screen.dart` - Exemplo de layout responsivo
+
+## Paleta de Cores Atualizada
+
+### Cores Primárias
+- **primary** (#2563EB): Azul vibrante - Botões, fundos, elementos ativos
+- **primaryDark** (#1E40AF): Azul profundo - Ícones e textos em fundo branco
+- **secondary** (#7C3AED): Roxo - Elementos secundários, gradientes
+
+### Uso Correto
+- ✅ Botões primários: `backgroundColor: colors.primary` + `foregroundColor: colors.white`
+- ✅ Ícones ativos: `colors.primaryDark`
+- ✅ Gradientes hero: `colors.primary` → `colors.secondary`
+- ✅ Tabs ativas: `colors.primary` com texto branco
+- ✅ Focus states: `colors.primary`
+- ❌ NUNCA usar yellow ou yellowDark (removidos)
+- ❌ NUNCA usar texto escuro em botões com fundo colorido
 
 
 ## Componentes Específicos
 
 ### Card de Saldo Total (Hero)
-- Background: Amarelo (#FFE70F) com possível gradiente sutil
+- Background: Gradiente Azul → Roxo (linear-gradient(135deg, #2563EB 0%, #7C3AED 100%))
 - Border radius: 24px
 - Padding: 24px
 - Elevação: 4
@@ -420,7 +447,7 @@ Fonte padrão: **System Font** (San Francisco no iOS, Roboto no Android)
 - Container: Scroll horizontal se necessário
 - Espaçamento entre tabs: 8px
 - Tab inativo: Background transparente, texto cinza médio
-- Tab ativo: Background amarelo, texto branco
+- Tab ativo: Background azul primário, texto branco
 - Border radius: 12px
 - Padding: 12px horizontal, 8px vertical
 

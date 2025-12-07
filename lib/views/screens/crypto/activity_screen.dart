@@ -138,13 +138,13 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
           'Atividade',
           style: TextStyle(
             color: colors.darkGray,
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         actions: [
           // Botão de filtro
           IconButton(
@@ -161,7 +161,7 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
           ? _buildEmptyState(colors)
           : RefreshIndicator(
               onRefresh: _refreshTransactions,
-              color: colors.yellow,
+              color: colors.primary,
               child: ListView.builder(
                 padding: const EdgeInsets.all(20),
                 itemCount: _filteredTransactions.length,
@@ -304,7 +304,7 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.yellow,
+                  backgroundColor: colors.primary,
                   foregroundColor: colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -345,11 +345,11 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? colors.yellow : colors.lightGray,
+          color: isSelected ? colors.primary : colors.lightGray,
           borderRadius: BorderRadius.circular(16),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: colors.yellow.withValues(alpha: 0.3),
+              color: colors.primary.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -383,11 +383,11 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? colors.yellow : colors.lightGray,
+          color: isSelected ? colors.primary : colors.lightGray,
           borderRadius: BorderRadius.circular(16),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: colors.yellow.withValues(alpha: 0.3),
+              color: colors.primary.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -412,21 +412,40 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            PhosphorIcon(
-              PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill),
-              size: 80,
-              color: colors.mediumGray.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 24),
+            // Ícone animado
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: PhosphorIcon(
+                  PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill),
+                  size: 60,
+                  color: colors.primaryDark,
+                ),
+              ),
+            ).animate()
+              .fadeIn(duration: 600.ms)
+              .scale(delay: 200.ms, duration: 400.ms),
+            
+            const SizedBox(height: 32),
+            
             Text(
               'Nenhuma transação',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: colors.darkGray,
               ),
-            ),
-            const SizedBox(height: 8),
+            ).animate()
+              .fadeIn(delay: 400.ms, duration: 400.ms)
+              .slideY(begin: 0.2, delay: 400.ms, duration: 400.ms),
+            
+            const SizedBox(height: 12),
+            
             Text(
               _selectedType != null || _selectedPeriod != 'Tudo'
                   ? 'Nenhuma transação encontrada\ncom os filtros selecionados.'
@@ -434,9 +453,12 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
               style: TextStyle(
                 fontSize: 14,
                 color: colors.mediumGray,
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
-            ),
+            ).animate()
+              .fadeIn(delay: 600.ms, duration: 400.ms)
+              .slideY(begin: 0.2, delay: 600.ms, duration: 400.ms),
             if (_selectedType == null && _selectedPeriod == 'Tudo') ...[
               const SizedBox(height: 32),
               ElevatedButton(
@@ -448,7 +470,7 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.yellow,
+                  backgroundColor: colors.primary,
                   foregroundColor: colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -548,8 +570,19 @@ class _TransactionListItem extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: colors.lightGray,
+                            gradient: LinearGradient(
+                              colors: [
+                                colors.primary.withValues(alpha: 0.1),
+                                colors.primary.withValues(alpha: 0.05),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                             borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: colors.primary.withValues(alpha: 0.2),
+                              width: 0.5,
+                            ),
                           ),
                           child: Text(
                             crypto!.symbol,

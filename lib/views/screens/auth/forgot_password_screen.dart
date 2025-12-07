@@ -100,7 +100,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: PhosphorIcon(
                     PhosphorIcons.lockKey(PhosphorIconsStyle.fill),
                     size: 40,
-                    color: colors.yellowDark,
+                    color: colors.primaryDark,
                   ),
                 ),
               )

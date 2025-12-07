@@ -564,4 +564,11 @@ class AuthController extends ChangeNotifier {
     // Set the user-friendly message
     _setError(errorResult.userMessage);
   }
+
+  /// Atualiza o usuário atual (para mudanças como foto de perfil)
+  void updateCurrentUser(User updatedUser) {
+    _currentUser = updatedUser;
+    notifyListeners();
+    debugPrint('✅ Current user updated');
+  }
 }

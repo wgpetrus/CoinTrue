@@ -12,8 +12,10 @@ import 'edit_profile_screen.dart';
 import 'notification_settings_screen.dart';
 import '../../../models/user_profile.dart';
 import '../../../repositories/user_profile_repository.dart';
+import '../../../services/profile_image_service.dart';
 import '../../widgets/profile/profile_settings_item.dart';
 import '../../widgets/profile/profile_settings_toggle.dart';
+import '../../widgets/profile_avatar.dart';
 
 /// Tela de Perfil/Configurações
 /// 
@@ -358,10 +360,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [
-            Color(0xFF2D2D2D),
-            Color(0xFF1A1A1A),
+            colors.primary,
+            colors.secondary,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -369,7 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: colors.primary.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -377,35 +379,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
-          // Avatar
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [colors.yellow, colors.yellowDark],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: colors.yellow.withValues(alpha: 0.3),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
+          // Avatar com funcionalidade de edição
+          ProfileAvatar(
+            size: 80,
+            showBorder: true,
+            showEditIcon: true,
+            onTap: () {
+              // Upload de fotos requer Firebase Storage (plano Blaze)
+              // Temporariamente desabilitado
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Upload de fotos disponível em breve! 📸'),
+                  backgroundColor: AppConstants.colors.info,
+                  duration: const Duration(seconds: 3),
                 ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                firstLetter,
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+              );
+            },
           ),
           
           const SizedBox(height: 20),
@@ -437,9 +426,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Text(
               user?.email ?? '',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -451,15 +440,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Botão Editar Perfil
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [colors.yellow, colors.yellowDark],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: colors.yellow.withValues(alpha: 0.3),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -489,16 +474,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       PhosphorIcon(
                         PhosphorIcons.pencilSimple(PhosphorIconsStyle.bold),
-                        color: Colors.white,
+                        color: colors.primary,
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
+                      Text(
                         'Editar Perfil',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: colors.primary,
                         ),
                       ),
                     ],
@@ -537,7 +522,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Container(
           decoration: BoxDecoration(
             color: colors.white,
-            border: Border.all(color: colors.lightGray),
+            border: Border.all(
+              color: colors.veryLightGray,
+              width: 1,
+            ),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -582,7 +570,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             PhosphorIcon(
               PhosphorIcons.key(PhosphorIconsStyle.fill),
-              color: colors.yellow,
+              color: colors.primary,
               size: 24,
             ),
             const SizedBox(width: 12),
@@ -702,7 +690,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onWillPop: () async => false,
                   child: Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+                      valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                     ),
                   ),
                 ),
@@ -748,7 +736,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: colors.yellow,
+              backgroundColor: colors.primary,
               foregroundColor: colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -970,7 +958,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onWillPop: () async => false,
         child: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppConstants.colors.yellow),
+            valueColor: AlwaysStoppedAnimation<Color>(AppConstants.colors.primary),
           ),
         ),
       ),
@@ -1095,8 +1083,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colors.lightGray,
+                  gradient: LinearGradient(
+                    colors: [
+                      colors.primary.withValues(alpha: 0.08),
+                      colors.primary.withValues(alpha: 0.04),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -1121,8 +1120,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: colors.yellow,
-                foregroundColor: colors.darkGray,
+                backgroundColor: colors.primary,
+                foregroundColor: colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1184,6 +1183,303 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
+  }
+
+  /// Mostra opções para selecionar foto de perfil
+  void _showImagePickerOptions(BuildContext context) {
+    final colors = AppConstants.colors;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Indicador de arrasto
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colors.lightGray,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Título
+            Text(
+              'Alterar Foto de Perfil',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: colors.darkGray,
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Opções
+            _buildImageOption(
+              context: context,
+              icon: PhosphorIcons.camera(PhosphorIconsStyle.fill),
+              title: 'Câmera',
+              subtitle: 'Tirar uma nova foto',
+              onTap: () => _updateProfileImage(context, fromCamera: true),
+            ),
+            const SizedBox(height: 12),
+            _buildImageOption(
+              context: context,
+              icon: PhosphorIcons.image(PhosphorIconsStyle.fill),
+              title: 'Galeria',
+              subtitle: 'Escolher da galeria',
+              onTap: () => _updateProfileImage(context, fromCamera: false),
+            ),
+            const SizedBox(height: 12),
+            _buildImageOption(
+              context: context,
+              icon: PhosphorIcons.trash(PhosphorIconsStyle.fill),
+              title: 'Remover Foto',
+              subtitle: 'Usar avatar padrão',
+              color: colors.error,
+              onTap: () => _removeProfileImage(context),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageOption({
+    required BuildContext context,
+    required PhosphorIconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    final colors = AppConstants.colors;
+    final optionColor = color ?? colors.primary;
+    
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colors.primary.withValues(alpha: 0.08),
+              colors.primary.withValues(alpha: 0.04),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: optionColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: PhosphorIcon(
+                  icon,
+                  size: 24,
+                  color: optionColor,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: colors.darkGray,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.mediumGray,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Atualiza foto de perfil
+  Future<void> _updateProfileImage(BuildContext context, {required bool fromCamera}) async {
+    Navigator.pop(context); // Fecha o bottom sheet
+    
+    final authController = context.read<AuthController>();
+    final user = authController.currentUser;
+    
+    if (user == null) return;
+
+    // Mostra loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                'Processando imagem...',
+                style: TextStyle(
+                  color: AppConstants.colors.darkGray,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    try {
+      final profileImageService = ProfileImageService();
+      final imageUrl = await profileImageService.updateProfileImage(
+        user.id,
+        fromCamera: fromCamera,
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Tempo limite excedido. Tente novamente.');
+        },
+      );
+
+      if (mounted) {
+        Navigator.pop(context); // Remove loading
+        
+        // Atualiza o usuário no AuthController
+        final updatedUser = user.copyWith(profileImageUrl: imageUrl);
+        authController.updateCurrentUser(updatedUser);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Foto de perfil atualizada!'),
+            backgroundColor: AppConstants.colors.success,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Remove loading
+        
+        // Extrair mensagem de erro amigável
+        String errorMessage = 'Erro ao atualizar foto de perfil';
+        if (e.toString().contains('Exception:')) {
+          errorMessage = e.toString().replaceAll('Exception:', '').trim();
+        }
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: AppConstants.colors.error,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Remove foto de perfil
+  Future<void> _removeProfileImage(BuildContext context) async {
+    Navigator.pop(context); // Fecha o bottom sheet
+    
+    final authController = context.read<AuthController>();
+    final user = authController.currentUser;
+    
+    if (user == null) return;
+
+    // Mostra loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    try {
+      final profileImageService = ProfileImageService();
+      final success = await profileImageService.removeProfileImage(user.id);
+
+      if (mounted) {
+        Navigator.pop(context); // Remove loading
+        
+        if (success) {
+          // Atualiza o usuário no AuthController
+          final updatedUser = user.copyWith(profileImageUrl: null);
+          authController.updateCurrentUser(updatedUser);
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Foto de perfil removida!'),
+              backgroundColor: AppConstants.colors.success,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Erro ao remover foto de perfil'),
+              backgroundColor: AppConstants.colors.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Remove loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro: $e'),
+            backgroundColor: AppConstants.colors.error,
+          ),
+        );
+      }
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/asset_loader.dart';
 import '../../../utils/platform_helper.dart';
 
 /// Widget de prompt para autenticação biométrica
@@ -38,12 +39,12 @@ class BiometricPrompt extends StatelessWidget {
         color: colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: colors.yellow,
+          color: colors.primary,
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: colors.yellow.withValues(alpha: 0.2),
+            color: colors.primary.withValues(alpha: 0.2),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -86,9 +87,9 @@ class BiometricPrompt extends StatelessWidget {
             child: ElevatedButton(
               onPressed: isAuthenticating ? null : onAuthenticate,
               style: ElevatedButton.styleFrom(
-                backgroundColor: colors.yellow,
+                backgroundColor: colors.primary,
                 disabledBackgroundColor: colors.darkGray.withValues(alpha: 0.3),
-                foregroundColor: colors.darkGray,
+                foregroundColor: colors.white,
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -142,22 +143,13 @@ class BiometricPrompt extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: colors.yellow.withValues(alpha: 0.2),
+        color: colors.primary.withValues(alpha: 0.2),
         shape: BoxShape.circle,
       ),
       child: Center(
-        child: Image.asset(
-          AppAssets.logoBiometric,
+        child: AssetLoader.loadBiometricLogo(
           width: 48,
           height: 48,
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback para ícone padrão caso a imagem não carregue
-            return Icon(
-              Icons.fingerprint,
-              size: 48,
-              color: colors.yellowDark,
-            );
-          },
         ),
       ),
     );

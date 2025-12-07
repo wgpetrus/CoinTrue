@@ -101,7 +101,14 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colors.lightGray,
+        gradient: LinearGradient(
+          colors: [
+            colors.primary.withValues(alpha: 0.08),
+            colors.primary.withValues(alpha: 0.04),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: colors.mediumGray.withValues(alpha: 0.2),
@@ -154,10 +161,10 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: colors.yellow.withValues(alpha: 0.15),
+                      color: colors.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: colors.yellow.withValues(alpha: 0.3),
+                        color: colors.primary.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -166,7 +173,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: colors.yellowDark,
+                        color: colors.primaryDark,
                       ),
                     ),
                   ),
@@ -239,7 +246,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: colors.yellow,
+                  color: colors.primary,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -525,7 +532,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
       child: ElevatedButton(
         onPressed: isValid ? _handleConvert : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: colors.yellow,
+          backgroundColor: colors.primary,
           disabledBackgroundColor: colors.mediumGray.withValues(alpha: 0.3),
           foregroundColor: colors.white,
           elevation: 0,
@@ -668,8 +675,19 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: colors.lightGray,
+                              gradient: LinearGradient(
+                                colors: [
+                                  colors.primary.withValues(alpha: 0.06),
+                                  colors.primary.withValues(alpha: 0.03),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
                               borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: colors.primary.withValues(alpha: 0.15),
+                                width: 1,
+                              ),
                             ),
                             child: Row(
                               children: [
@@ -896,7 +914,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: colors.yellow,
+              backgroundColor: colors.primary,
               foregroundColor: colors.white,
             ),
             child: const Text('Confirmar'),

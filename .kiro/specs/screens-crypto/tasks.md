@@ -93,13 +93,13 @@ Os diálogos no chat de cada task devem ser escritos em **PORTUGUÊS DO BRASIL**
 - [x] 9.6 Integrar com navegação
 - [x] 9.7 Adicionar funcionalidades de Sair e Excluir Conta -->
 
-### Fase 10: Melhorias e Polimento
+<!-- ### Fase 10: Melhorias e Polimento
 
-- [ ] 10.1 Implementar favoritos
-- [ ] 10.2 Melhorar gráficos
-- [ ] 10.3 Adicionar animações
-- [ ] 10.4 Implementar pull-to-refresh
-- [ ] 10.5 Otimizar performance
+- [x] 10.1 Implementar favoritos
+- [x] 10.2 Melhorar gráficos
+- [x] 10.3 Adicionar animações
+- [x] 10.4 Implementar pull-to-refresh
+- [x] 10.5 Otimizar performance -->
 
 ### Fase 11: Testes
 

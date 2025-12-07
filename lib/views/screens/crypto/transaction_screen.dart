@@ -327,8 +327,19 @@ class _TransactionScreenState extends State<TransactionScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.lightGray,
+        gradient: LinearGradient(
+          colors: [
+            colors.primary.withValues(alpha: 0.1),
+            colors.primary.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colors.primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
       ),
       child: Row(
         children: [
@@ -429,9 +440,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? colors.yellow : colors.white,
+          color: isSelected ? colors.primary : colors.white,
           border: Border.all(
-            color: isSelected ? colors.yellow : colors.lightGray,
+            color: isSelected ? colors.primary : colors.lightGray,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -464,8 +475,19 @@ class _TransactionScreenState extends State<TransactionScreen> {
       return Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: colors.lightGray,
+          gradient: LinearGradient(
+            colors: [
+              colors.primary.withValues(alpha: 0.08),
+              colors.primary.withValues(alpha: 0.04),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
         child: Row(
           children: [
@@ -497,8 +519,19 @@ class _TransactionScreenState extends State<TransactionScreen> {
       return Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: colors.lightGray,
+          gradient: LinearGradient(
+            colors: [
+              colors.primary.withValues(alpha: 0.08),
+              colors.primary.withValues(alpha: 0.04),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
         child: Row(
           children: [
@@ -556,7 +589,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               child: Text(
                 'TUDO',
                 style: TextStyle(
-                  color: colors.yellow,
+                  color: colors.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -577,11 +610,13 @@ class _TransactionScreenState extends State<TransactionScreen> {
             fontWeight: FontWeight.bold,
           ),
           decoration: InputDecoration(
-            prefixText: 'R\$ ',
-            prefixStyle: TextStyle(
-              color: colors.mediumGray,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+            prefix: Text(
+              'R\$ ',
+              style: TextStyle(
+                color: colors.darkGray,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             hintText: '0,00',
             hintStyle: TextStyle(
@@ -597,7 +632,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: colors.yellow, width: 2),
+              borderSide: BorderSide(color: colors.primary, width: 2),
             ),
             contentPadding: const EdgeInsets.all(20),
           ),
@@ -640,10 +675,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [
-            Color(0xFF2D2D2D),
-            Color(0xFF1A1A1A),
+            colors.darkGray,
+            colors.darkGray.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -651,7 +686,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: colors.darkGray.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -754,7 +789,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
     return ElevatedButton(
       onPressed: _showConfirmation,
       style: ElevatedButton.styleFrom(
-        backgroundColor: colors.yellow,
+        backgroundColor: colors.primary,
         foregroundColor: colors.white,
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(
@@ -805,7 +840,7 @@ class _LoadingDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+              valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
               strokeWidth: 3,
             ),
             const SizedBox(height: 24),
@@ -860,7 +895,7 @@ class _ConfirmationDialog extends StatelessWidget {
         children: [
           PhosphorIcon(
             PhosphorIcons.warningCircle(PhosphorIconsStyle.fill),
-            color: colors.yellow,
+            color: colors.primary,
             size: 24,
           ),
           const SizedBox(width: 12),

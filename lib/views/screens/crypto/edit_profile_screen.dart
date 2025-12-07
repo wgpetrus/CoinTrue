@@ -307,14 +307,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: 120,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [colors.yellow, colors.yellowDark],
+                          colors: [colors.primary, colors.secondary],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: colors.yellow.withValues(alpha: 0.3),
+                            color: colors.primary.withValues(alpha: 0.3),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
@@ -418,7 +418,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: PhosphorIcons.envelope(),
                 label: 'Email',
                 value: _email,
-                hint: 'Para alterar, acesse "Email e Senha"',
+                hint: 'Email não pode ser alterado',
               ),
 
               const SizedBox(height: 16),
@@ -478,7 +478,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: colors.yellow, width: 2),
+                    borderSide: BorderSide(color: colors.primary, width: 2),
                   ),
                   contentPadding: const EdgeInsets.all(16),
                   prefixIcon: Padding(
@@ -571,7 +571,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         trailing: _selectedState == state
                                             ? PhosphorIcon(
                                                 PhosphorIcons.check(PhosphorIconsStyle.bold),
-                                                color: colors.yellow,
+                                                color: colors.primary,
                                                 size: 24,
                                               )
                                             : null,
@@ -592,8 +592,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colors.lightGray,
+                    gradient: LinearGradient(
+                      colors: [
+                        colors.primary.withValues(alpha: 0.08),
+                        colors.primary.withValues(alpha: 0.04),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: colors.primary.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -680,7 +691,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       trailing: _selectedOccupation == occupation
                                           ? PhosphorIcon(
                                               PhosphorIcons.check(PhosphorIconsStyle.bold),
-                                              color: colors.yellow,
+                                              color: colors.primary,
                                               size: 24,
                                             )
                                           : null,
@@ -698,8 +709,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colors.lightGray,
+                    gradient: LinearGradient(
+                      colors: [
+                        colors.primary.withValues(alpha: 0.08),
+                        colors.primary.withValues(alpha: 0.04),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: colors.primary.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -750,9 +772,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: colors.lightGray.withValues(alpha: 0.5),
+                  gradient: LinearGradient(
+                    colors: [
+                      colors.primary.withValues(alpha: 0.08),
+                      colors.primary.withValues(alpha: 0.04),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colors.lightGray),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -825,14 +857,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _saveChanges,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.yellow,
+                  backgroundColor: colors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
-                  disabledBackgroundColor: colors.yellow.withValues(alpha: 0.4),
+                  disabledBackgroundColor: colors.primary.withValues(alpha: 0.4),
                 ),
                 child: _isLoading
                     ? const SizedBox(
@@ -891,10 +923,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.lightGray.withValues(alpha: 0.5),
+            gradient: LinearGradient(
+              colors: [
+                colors.primary.withValues(alpha: 0.08),
+                colors.primary.withValues(alpha: 0.04),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: colors.lightGray,
+              color: colors.primary.withValues(alpha: 0.2),
               width: 1,
             ),
           ),

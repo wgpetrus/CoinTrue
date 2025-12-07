@@ -60,13 +60,13 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           'Portfólio',
           style: TextStyle(
             color: colors.darkGray,
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         actions: [
           // Botão de ordenação
           PopupMenuButton<PortfolioSortType>(
@@ -133,7 +133,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                   ? _buildEmptyState(colors)
                   : RefreshIndicator(
                       onRefresh: _refreshPortfolio,
-                      color: colors.yellow,
+                      color: colors.primary,
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(20),
@@ -227,21 +227,70 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   
   Widget _buildLoading(AppColors colors) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colors.primary.withValues(alpha: 0.1),
+              colors.secondary.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Carregando portfólio...',
-            style: TextStyle(
-              color: colors.mediumGray,
-              fontSize: 14,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.2),
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [colors.primary, colors.secondary],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.white),
+                  strokeWidth: 3,
+                ),
+              ),
+            ).animate(
+              onPlay: (controller) => controller.repeat(),
+            ).scale(
+              duration: 1000.ms,
+              begin: const Offset(0.95, 0.95),
+              end: const Offset(1.05, 1.05),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Text(
+              'Carregando portfólio...',
+              style: TextStyle(
+                color: colors.darkGray,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Aguarde um momento',
+              style: TextStyle(
+                color: colors.mediumGray,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -280,7 +329,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             ElevatedButton(
               onPressed: _refreshPortfolio,
               style: ElevatedButton.styleFrom(
-                backgroundColor: colors.yellow,
+                backgroundColor: colors.primary,
                 foregroundColor: colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -302,29 +351,51 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            PhosphorIcon(
-              PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
-              size: 80,
-              color: colors.mediumGray.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 24),
+            // Ícone animado com fundo
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: PhosphorIcon(
+                  PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
+                  size: 60,
+                  color: colors.primaryDark,
+                ),
+              ),
+            ).animate()
+              .fadeIn(duration: 600.ms)
+              .scale(delay: 200.ms, duration: 400.ms),
+            
+            const SizedBox(height: 32),
+            
             Text(
               'Portfólio vazio',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: colors.darkGray,
               ),
-            ),
-            const SizedBox(height: 8),
+            ).animate()
+              .fadeIn(delay: 400.ms, duration: 400.ms)
+              .slideY(begin: 0.2, delay: 400.ms, duration: 400.ms),
+            
+            const SizedBox(height: 12),
+            
             Text(
               'Você ainda não possui nenhuma criptomoeda.\nComece comprando sua primeira cripto!',
               style: TextStyle(
                 fontSize: 14,
                 color: colors.mediumGray,
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
-            ),
+            ).animate()
+              .fadeIn(delay: 600.ms, duration: 400.ms)
+              .slideY(begin: 0.2, delay: 600.ms, duration: 400.ms),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
@@ -335,7 +406,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: colors.yellow,
+                backgroundColor: colors.primary,
                 foregroundColor: colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -419,8 +490,8 @@ class _PortfolioValueCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D2D),
-            const Color(0xFF1A1A1A),
+            colors.primary,
+            colors.secondary,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -428,7 +499,7 @@ class _PortfolioValueCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: colors.primary.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -443,14 +514,14 @@ class _PortfolioValueCard extends StatelessWidget {
               Text(
                 'Valor Total',
                 style: TextStyle(
-                  color: colors.white.withValues(alpha: 0.9),
+                  color: colors.white,
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               PhosphorIcon(
                 PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
-                color: colors.white.withValues(alpha: 0.7),
+                color: colors.white,
                 size: 24,
               ),
             ],
@@ -478,9 +549,9 @@ class _PortfolioValueCard extends StatelessWidget {
               Text(
                 _formatProfitLoss(profitLoss, profitLossPercent),
                 style: TextStyle(
-                  color: colors.white.withValues(alpha: 0.9),
+                  color: colors.white,
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -497,8 +568,9 @@ class _PortfolioValueCard extends StatelessWidget {
                   Text(
                     'Em Criptos',
                     style: TextStyle(
-                      color: colors.white.withValues(alpha: 0.7),
+                      color: colors.white.withValues(alpha: 0.9),
                       fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -518,8 +590,9 @@ class _PortfolioValueCard extends StatelessWidget {
                   Text(
                     'Saldo Disponível',
                     style: TextStyle(
-                      color: colors.white.withValues(alpha: 0.7),
+                      color: colors.white.withValues(alpha: 0.9),
                       fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -572,8 +645,19 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.lightGray,
+        gradient: LinearGradient(
+          colors: [
+            colors.primary.withValues(alpha: 0.1),
+            colors.primary.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colors.primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,7 +722,10 @@ class _PortfolioAssetItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: colors.white,
-        border: Border.all(color: colors.lightGray),
+        border: Border.all(
+          color: colors.veryLightGray,
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Material(
@@ -772,7 +859,10 @@ class _DistributionChartState extends State<_DistributionChart> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colors.white,
-        border: Border.all(color: colors.lightGray),
+        border: Border.all(
+          color: colors.veryLightGray,
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -790,10 +880,10 @@ class _DistributionChartState extends State<_DistributionChart> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Gráfico de Pizza
+              // Gráfico de Pizza - Tamanho reduzido
               SizedBox(
-                width: 140,
-                height: 140,
+                width: 120,
+                height: 120,
                 child: PieChart(
                     PieChartData(
                       pieTouchData: PieTouchData(
@@ -811,12 +901,12 @@ class _DistributionChartState extends State<_DistributionChart> {
                       ),
                       borderData: FlBorderData(show: false),
                       sectionsSpace: 2,
-                      centerSpaceRadius: 50,
+                      centerSpaceRadius: 35,
                       sections: _buildSections(colors),
                     ),
                   ),
                 ),
-              const SizedBox(width: 24),
+              const SizedBox(width: 20),
               // Legenda
               Expanded(
                 child: Column(
@@ -889,8 +979,8 @@ class _DistributionChartState extends State<_DistributionChart> {
       final index = entry.key;
       final item = entry.value;
       final isTouched = index == _touchedIndex;
-      final radius = isTouched ? 65.0 : 55.0;
-      final fontSize = isTouched ? 16.0 : 14.0;
+      final radius = isTouched ? 45.0 : 40.0;
+      final fontSize = isTouched ? 12.0 : 10.0;
 
       return PieChartSectionData(
         color: _getChartColor(index, colors),
@@ -949,7 +1039,8 @@ class _DistributionChartState extends State<_DistributionChart> {
       colors.cardano,      // Azul
       colors.solana,       // Rosa
       colors.success,      // Verde
-      colors.yellow,       // Amarelo
+      colors.primary,      // Azul primário
+      colors.secondary,    // Roxo secundário
       colors.error,        // Vermelho
       colors.mediumGray,   // Cinza
     ];
@@ -972,7 +1063,7 @@ class _DistributionChartState extends State<_DistributionChart> {
       case 'USDC':
         return colors.success;      // Verde (stablecoins)
       case 'BNB':
-        return colors.yellow;       // Amarelo
+        return colors.primary;       // Amarelo
       case 'XRP':
       case 'DOGE':
         return colors.error;        // Vermelho

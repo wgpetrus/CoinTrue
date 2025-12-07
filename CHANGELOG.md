@@ -65,7 +65,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 #### Added - UI/UX
 - Design system completo (CoinTrue)
-- Cores consistentes (amarelo #FFE70F como primária)
+- Cores consistentes (azul #2563EB como primária, roxo #7C3AED como secundária)
 - Phosphor Icons como padrão
 - Animações com flutter_animate
 - Responsividade para mobile

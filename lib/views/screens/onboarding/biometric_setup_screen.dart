@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/asset_loader.dart';
 import '../../../utils/platform_helper.dart';
 import '../../widgets/widgets.dart';
 
@@ -42,14 +43,16 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
           Navigator.of(context).pushReplacementNamed('/home');
         }
       });
-      return const Scaffold(
-        body: Center(
+      return Scaffold(
+        backgroundColor: AppConstants.colors.white,
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       );
     }
 
     return Scaffold(
+      backgroundColor: AppConstants.colors.white,
       body: Consumer<AuthController>(
         builder: (context, authController, child) {
           return LoadingOverlay(
@@ -135,8 +138,8 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
               child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.yellow,
-                  foregroundColor: colors.darkGray,
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -249,22 +252,13 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: colors.yellow.withValues(alpha: 0.2),
+          color: colors.primary.withValues(alpha: 0.2),
           shape: BoxShape.circle,
         ),
         child: Center(
-          child: Image.asset(
-            AppAssets.logoBiometric,
+          child: AssetLoader.loadBiometricLogo(
             width: iconSize,
             height: iconSize,
-            errorBuilder: (context, error, stackTrace) {
-              // Fallback caso a imagem não carregue
-              return Icon(
-                Icons.fingerprint,
-                size: iconSize,
-                color: colors.yellowDark,
-              );
-            },
           ),
         ),
       ),
@@ -336,12 +330,12 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: colors.yellow.withValues(alpha: 0.2),
+                  color: colors.primary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   benefit['icon'] as IconData,
-                  color: colors.yellowDark,
+                  color: colors.primaryDark,
                   size: 24,
                 ),
               ),
@@ -390,7 +384,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
             ? null 
             : () => _handleEnableBiometric(authController),
         style: ElevatedButton.styleFrom(
-          backgroundColor: colors.yellow,
+          backgroundColor: colors.primary,
           disabledBackgroundColor: colors.darkGray.withValues(alpha: 0.3),
           foregroundColor: colors.white,
           elevation: 0,

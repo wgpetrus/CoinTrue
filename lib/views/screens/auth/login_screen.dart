@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../controllers/auth_controller.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/asset_loader.dart';
 import '../../../utils/platform_helper.dart';
 import '../../widgets/widgets.dart';
 import 'email_password_login_screen.dart';
@@ -252,18 +253,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = isTablet ? 220.0 : 180.0;
     
     return Center(
-      child: Image.asset(
-        AppAssets.logoApp,
+      child: AssetLoader.loadAppLogo(
         width: size,
         height: size,
-        errorBuilder: (context, error, stackTrace) {
-          // Fallback caso a imagem não carregue
-          return Icon(
-            Icons.account_balance_wallet,
-            size: size * 0.7,
-            color: colors.yellowDark,
-          );
-        },
       )
           .animate()
           .fadeIn(duration: 400.ms, curve: Curves.easeOut)

@@ -21,6 +21,9 @@ class User extends Equatable {
   /// URL to user's profile photo (optional)
   final String? photoUrl;
 
+  /// URL to user's custom profile image (optional)
+  final String? profileImageUrl;
+
   /// Authentication provider used (google or apple)
   final AuthProvider provider;
 
@@ -38,6 +41,7 @@ class User extends Equatable {
     required this.email,
     this.displayName,
     this.photoUrl,
+    this.profileImageUrl,
     required this.provider,
     required this.createdAt,
     required this.isNewUser,
@@ -56,6 +60,7 @@ class User extends Equatable {
       email: firebaseUser.email ?? '',
       displayName: firebaseUser.displayName,
       photoUrl: firebaseUser.photoURL,
+      profileImageUrl: null, // Será carregado do Firestore
       provider: provider,
       createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
       isNewUser: isNewUser,
@@ -70,6 +75,7 @@ class User extends Equatable {
       'email': email,
       'displayName': displayName,
       'photoUrl': photoUrl,
+      'profileImageUrl': profileImageUrl,
       'provider': provider.name,
       'createdAt': createdAt.toIso8601String(),
       'isNewUser': isNewUser,
@@ -84,6 +90,7 @@ class User extends Equatable {
       email: json['email'] as String,
       displayName: json['displayName'] as String?,
       photoUrl: json['photoUrl'] as String?,
+      profileImageUrl: json['profileImageUrl'] as String?,
       provider: AuthProvider.values.firstWhere(
         (e) => e.name == json['provider'],
       ),
@@ -99,6 +106,7 @@ class User extends Equatable {
     String? email,
     String? displayName,
     String? photoUrl,
+    String? profileImageUrl,
     AuthProvider? provider,
     DateTime? createdAt,
     bool? isNewUser,
@@ -109,6 +117,7 @@ class User extends Equatable {
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
       photoUrl: photoUrl ?? this.photoUrl,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       provider: provider ?? this.provider,
       createdAt: createdAt ?? this.createdAt,
       isNewUser: isNewUser ?? this.isNewUser,
@@ -122,6 +131,7 @@ class User extends Equatable {
         email,
         displayName,
         photoUrl,
+        profileImageUrl,
         provider,
         createdAt,
         isNewUser,

@@ -38,9 +38,18 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
   Widget build(BuildContext context) {
     final colors = AppConstants.colors;
     final cryptoController = context.watch<CryptoController>();
+    final portfolioController = context.watch<PortfolioController>();
     
-    // Filtrar criptos baseado na pesquisa
+    // Filtrar criptos baseado no tipo de transação e pesquisa
     final filteredCryptos = cryptoController.cryptos.where((crypto) {
+      // Para venda, mostrar apenas criptos que possuo
+      if (widget.type == TransactionType.sell) {
+        final hasAsset = portfolioController.assets.any((asset) => 
+          asset.cryptoId == crypto.id && asset.quantity > 0);
+        if (!hasAsset) return false;
+      }
+      
+      // Filtro de pesquisa
       if (_searchQuery.isEmpty) return true;
       
       final query = _searchQuery.toLowerCase();
@@ -120,57 +129,58 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
   
   Widget _buildSearchField(AppColors colors) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: colors.lightGray,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        children: [
-          PhosphorIcon(
-            PhosphorIcons.magnifyingGlass(),
-            size: 20,
-            color: colors.mediumGray,
+      child: TextField(
+        controller: _searchController,
+        style: TextStyle(
+          fontSize: 16,
+          color: colors.darkGray,
+        ),
+        decoration: InputDecoration(
+          hintText: 'Pesquisar criptomoeda...',
+          hintStyle: TextStyle(
+            fontSize: 16,
+            color: colors.mediumGray.withOpacity(0.7),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              style: TextStyle(
-                fontSize: 16,
-                color: colors.darkGray,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Pesquisar criptomoeda...',
-                hintStyle: TextStyle(
-                  fontSize: 16,
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(12),
+            child: PhosphorIcon(
+              PhosphorIcons.magnifyingGlass(),
+              size: 20,
+              color: _searchQuery.isNotEmpty 
+                ? colors.primaryDark 
+                : colors.mediumGray,
+            ),
+          ),
+          suffixIcon: _searchQuery.isNotEmpty
+            ? IconButton(
+                icon: PhosphorIcon(
+                  PhosphorIcons.x(),
+                  size: 20,
                   color: colors.mediumGray,
                 ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
-            ),
+                onPressed: () {
+                  setState(() {
+                    _searchController.clear();
+                    _searchQuery = '';
+                  });
+                },
+              )
+            : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
           ),
-          if (_searchQuery.isNotEmpty)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _searchController.clear();
-                  _searchQuery = '';
-                });
-              },
-              child: PhosphorIcon(
-                PhosphorIcons.x(PhosphorIconsStyle.bold),
-                size: 20,
-                color: colors.mediumGray,
-              ),
-            ),
-        ],
+        ),
+        onChanged: (value) {
+          setState(() {
+            _searchQuery = value;
+          });
+        },
       ),
     );
   }
@@ -208,12 +218,28 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
   }
   
   Widget _buildCryptoList(List<Crypto> cryptos, AppColors colors) {
+    final portfolioController = context.watch<PortfolioController>();
+    
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: cryptos.length,
       separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final crypto = cryptos[index];
+        
+        // Buscar quantidade disponível se for venda
+        double? availableQuantity;
+        if (widget.type == TransactionType.sell) {
+          try {
+            final asset = portfolioController.assets.firstWhere(
+              (a) => a.cryptoId == crypto.id,
+            );
+            availableQuantity = asset.quantity;
+          } catch (e) {
+            // Asset não encontrado, quantidade é null
+            availableQuantity = null;
+          }
+        }
         
         return InkWell(
           onTap: () {
@@ -232,8 +258,12 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: colors.lightGray,
+              color: colors.white,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colors.veryLightGray,
+                width: 1,
+              ),
             ),
             child: Row(
               children: [
@@ -261,18 +291,34 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
                           color: colors.mediumGray,
                         ),
                       ),
+                      if (availableQuantity != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          'Disponível: ${availableQuantity.toStringAsFixed(8)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
                 
                 // Preço
-                Text(
-                  'R\$ ${crypto.currentPrice.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: colors.darkGray,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'R\$ ${crypto.currentPrice.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.darkGray,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

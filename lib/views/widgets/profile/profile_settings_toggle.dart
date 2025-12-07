@@ -64,7 +64,7 @@ class ProfileSettingsToggle extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: colors.yellow,
+            activeColor: colors.primary,
           ),
         ],
       ),

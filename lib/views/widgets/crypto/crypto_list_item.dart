@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
 import 'crypto_icon.dart';
+import '../favorite_button.dart';
 
 /// Widget para exibir um item de criptomoeda na lista
 /// 
-/// Layout: [Ícone] [Nome/Símbolo] [Preço/Variação]
+/// Layout: [Ícone] [Nome/Símbolo] [Preço/Variação] [Favorito]
 class CryptoListItem extends StatelessWidget {
   final Crypto crypto;
   final VoidCallback? onTap;
+  final bool showFavorite;
+  final bool isInSelectionMode;
 
   const CryptoListItem({
     super.key,
     required this.crypto,
     this.onTap,
+    this.showFavorite = true,
+    this.isInSelectionMode = false,
   });
 
   @override
@@ -39,6 +45,13 @@ class CryptoListItem extends StatelessWidget {
             color: colors.veryLightGray,
             width: 1,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: colors.darkGray.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -98,6 +111,18 @@ class CryptoListItem extends StatelessWidget {
                 ),
               ],
             ),
+            
+            // Botão de favorito ou espaço extra para seleção
+            if (showFavorite) ...[
+              const SizedBox(width: 16),
+              FavoriteButton(
+                cryptoSymbol: crypto.symbol,
+                size: 20,
+              ),
+            ] else if (isInSelectionMode) ...[
+              // Espaço extra quando em modo de seleção para evitar conflito com checkbox
+              const SizedBox(width: 60),
+            ],
           ],
         ),
       ),

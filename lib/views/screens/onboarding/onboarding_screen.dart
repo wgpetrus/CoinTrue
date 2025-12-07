@@ -345,7 +345,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     trailing: _selectedState == state
                                         ? PhosphorIcon(
                                             PhosphorIcons.check(PhosphorIconsStyle.bold),
-                                            color: colors.yellow,
+                                            color: colors.primary,
                                             size: 24,
                                           )
                                         : null,
@@ -450,7 +450,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     trailing: _selectedOccupation == occupation
                                         ? PhosphorIcon(
                                             PhosphorIcons.check(PhosphorIconsStyle.bold),
-                                            color: colors.yellow,
+                                            color: colors.primary,
                                             size: 24,
                                           )
                                         : null,
@@ -509,7 +509,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     setState(() => _acceptedTerms = value ?? false);
                   },
                   controlAffinity: ListTileControlAffinity.leading,
-                  activeColor: colors.yellow,
+                  activeColor: colors.primary,
                   checkColor: colors.darkGray,
                   title: RichText(
                     text: TextSpan(
@@ -592,7 +592,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: colors.yellow.withValues(alpha: 0.2),
+                        color: colors.primary.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Stack(
@@ -603,13 +603,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             height: 60,
                             child: CircularProgressIndicator(
                               strokeWidth: 3,
-                              valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+                              valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                             ),
                           ),
                           PhosphorIcon(
                             PhosphorIcons.cloudArrowUp(PhosphorIconsStyle.fill),
                             size: 32,
-                            color: colors.yellowDark,
+                            color: colors.primaryDark,
                           ),
                         ],
                       ),

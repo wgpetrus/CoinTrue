@@ -109,10 +109,13 @@ ErrorMessage(
 Todos os widgets seguem o design system do aplicativo CoinTrue:
 
 - **Cores:**
-  - Amarelo (#FFE70F): Botões primários e destaques
+  - Azul Primário (#2563EB): Botões primários e destaques
+  - Azul Escuro (#1E40AF): Ícones e textos em fundo branco
+  - Roxo Secundário (#7C3AED): Elementos secundários e gradientes
   - Cinza escuro (#545454): Textos e elementos secundários
   - Branco (#FFFFFF): Backgrounds
-  - Vermelho (#D32F2F): Estados de erro
+  - Vermelho (#F44336): Estados de erro
+  - Verde (#4CAF50): Estados de sucesso
 
 - **Estilo:** Material Design clean e moderno
 - **Responsividade:** Adaptável a diferentes tamanhos de tela

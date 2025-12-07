@@ -69,7 +69,7 @@ class LoadingOverlay extends StatelessWidget {
                 children: [
                   // Spinner de loading
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                     strokeWidth: 3,
                   ),
                   const SizedBox(height: 16),

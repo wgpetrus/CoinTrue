@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
 import '../../../services/crypto/coingecko_api_service.dart';
 import '../../../services/crypto/chart_cache_service.dart';
 import '../../widgets/crypto/crypto_icon.dart';
+import '../../widgets/crypto/animated_price_chart.dart';
+import '../../widgets/favorite_button.dart';
 import 'transaction_screen.dart';
 
 /// Tela de detalhes de uma criptomoeda
@@ -145,21 +148,12 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: PhosphorIcon(
-              PhosphorIcons.star(),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FavoriteButton(
+              cryptoSymbol: widget.crypto.symbol,
               size: 24,
-              color: colors.mediumGray,
             ),
-            onPressed: () {
-              // TODO: Implementar favoritos
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Favoritos em breve!'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
           ),
         ],
       ),
@@ -311,7 +305,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? colors.yellowDark : colors.lightGray,
+                    color: isSelected ? colors.primaryDark : colors.lightGray,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -334,54 +328,49 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
         
         // Gráfico
         Container(
-          height: 200,
           decoration: BoxDecoration(
-            color: colors.lightGray,
+            gradient: LinearGradient(
+              colors: [
+                colors.primary.withValues(alpha: 0.08),
+                colors.primary.withValues(alpha: 0.04),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colors.primary.withValues(alpha: 0.2),
+              width: 1,
+            ),
           ),
           padding: const EdgeInsets.all(16),
           child: _isLoadingChart
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(colors.yellowDark),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Carregando gráfico...',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.mediumGray,
+              ? SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(colors.primaryDark),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : _chartData != null && _chartData!.isNotEmpty
-                  ? LineChart(_generateChartData(colors, _chartData!))
-                  : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          PhosphorIcon(
-                            PhosphorIcons.chartLine(),
-                            size: 32,
+                        const SizedBox(height: 12),
+                        Text(
+                          'Carregando gráfico...',
+                          style: TextStyle(
+                            fontSize: 12,
                             color: colors.mediumGray,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _chartError ?? 'Dados indisponíveis',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colors.mediumGray,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
+                )
+              : AnimatedPriceChart(
+                  data: _chartData ?? [],
+                  period: _selectedPeriod,
+                  isPositive: widget.crypto.priceChange24h >= 0,
+                ),
         ),
       ],
     );
@@ -452,8 +441,19 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.lightGray,
+        gradient: LinearGradient(
+          colors: [
+            colors.primary.withValues(alpha: 0.08),
+            colors.primary.withValues(alpha: 0.04),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colors.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,8 +501,8 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: colors.yellow,
-              foregroundColor: colors.darkGray,
+              backgroundColor: colors.primary,
+              foregroundColor: colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -569,7 +569,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
         LineChartBarData(
           spots: spots,
           isCurved: true,
-          color: colors.yellowDark,
+          color: colors.primaryDark,
           barWidth: 3,
           dotData: const FlDotData(show: false),
           belowBarData: BarAreaData(
@@ -578,8 +578,8 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                colors.yellowDark.withValues(alpha: 0.3),
-                colors.yellowDark.withValues(alpha: 0.0),
+                colors.primaryDark.withValues(alpha: 0.3),
+                colors.primaryDark.withValues(alpha: 0.0),
               ],
             ),
           ),

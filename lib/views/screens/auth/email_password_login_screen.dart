@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../controllers/auth_controller.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/asset_loader.dart';
 import '../../widgets/widgets.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -100,17 +101,9 @@ class _EmailPasswordLoginScreenState extends State<EmailPasswordLoginScreen> {
             children: [
               // Logo
               Center(
-                child: Image.asset(
-                  AppAssets.logoApp,
+                child: AssetLoader.loadAppLogo(
                   width: 120,
                   height: 120,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      Icons.account_balance_wallet,
-                      size: 80,
-                      color: colors.yellowDark,
-                    );
-                  },
                 ),
               )
                   .animate()

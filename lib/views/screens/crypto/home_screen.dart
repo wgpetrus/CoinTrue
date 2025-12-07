@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import '../../../utils/constants.dart';
 import '../../../utils/responsive_layout.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
+import '../../../controllers/favorites_controller.dart';
 import '../../widgets/crypto/crypto_list_item.dart';
 import '../../widgets/crypto/crypto_selector_sheet.dart';
 import 'markets_screen.dart';
@@ -16,6 +18,7 @@ import 'activity_screen.dart';
 import 'crypto_detail_screen.dart';
 import 'profile_screen.dart';
 import 'convert_crypto_screen.dart';
+import 'favorites_screen.dart';
 import '../../../models/crypto/transaction.dart';
 
 /// Home Screen - Tela principal após login
@@ -50,10 +53,22 @@ class HomeScreenState extends State<HomeScreen> {
       ActivityScreen(key: _activityKey),
     ];
     
-    // Iniciar auto-refresh global
+    // Iniciar auto-refresh global e carregar favoritos
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CryptoController>().startAutoUpdate();
+      _loadFavorites();
     });
+  }
+  
+  /// Carrega favoritos do usuário
+  Future<void> _loadFavorites() async {
+    final authController = context.read<AuthController>();
+    final favoritesController = context.read<FavoritesController>();
+    final userId = authController.currentUser?.id;
+    
+    if (userId != null) {
+      await favoritesController.loadFavorites(userId);
+    }
   }
 
   @override
@@ -85,6 +100,10 @@ class HomeScreenState extends State<HomeScreen> {
     final authController = context.read<AuthController>();
     final walletController = context.read<WalletController>();
     final portfolioController = context.read<PortfolioController>();
+    final cryptoController = context.read<CryptoController>();
+    
+    // Recarregar apenas top 10 criptos para o Dashboard
+    await cryptoController.loadCryptos(limit: 10, resetTimer: false);
     
     final userId = authController.currentUser?.id;
     if (userId != null) {
@@ -102,57 +121,97 @@ class HomeScreenState extends State<HomeScreen> {
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: SizedBox(
-            height: 70,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  index: 0,
-                  icon: PhosphorIcons.house(),
-                  activeIcon: PhosphorIcons.house(PhosphorIconsStyle.fill),
-                  label: 'Início',
-                  colors: colors,
-                ),
-                _buildNavItem(
-                  index: 1,
-                  icon: PhosphorIcons.briefcase(),
-                  activeIcon: PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
-                  label: 'Portfólio',
-                  colors: colors,
-                ),
-                // Botão central de ações
-                _buildCentralActionButton(colors),
-                _buildNavItem(
-                  index: 2,
-                  icon: PhosphorIcons.chartLine(),
-                  activeIcon: PhosphorIcons.chartLine(PhosphorIconsStyle.fill),
-                  label: 'Mercados',
-                  colors: colors,
-                ),
-                _buildNavItem(
-                  index: 3,
-                  icon: PhosphorIcons.clockCounterClockwise(),
-                  activeIcon: PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill),
-                  label: 'Atividade',
-                  colors: colors,
+      bottomNavigationBar: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.darkGray.withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, -4),
+                  spreadRadius: 0,
                 ),
               ],
             ),
+            child: SafeArea(
+              child: Container(
+                height: 68,
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(
+                      index: 0,
+                      icon: PhosphorIcons.house(),
+                      activeIcon: PhosphorIcons.house(PhosphorIconsStyle.fill),
+                      label: 'Início',
+                      colors: colors,
+                    ),
+                    _buildNavItem(
+                      index: 1,
+                      icon: PhosphorIcons.briefcase(),
+                      activeIcon: PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
+                      label: 'Portfólio',
+                      colors: colors,
+                    ),
+                    // Espaço para o botão flutuante
+                    const SizedBox(width: 56),
+                    _buildNavItem(
+                      index: 2,
+                      icon: PhosphorIcons.chartLine(),
+                      activeIcon: PhosphorIcons.chartLine(PhosphorIconsStyle.fill),
+                      label: 'Mercados',
+                      colors: colors,
+                    ),
+                    _buildNavItem(
+                      index: 3,
+                      icon: PhosphorIcons.clockCounterClockwise(),
+                      activeIcon: PhosphorIcons.clockCounterClockwise(PhosphorIconsStyle.fill),
+                      label: 'Atividade',
+                      colors: colors,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+          // Botão flutuante central sobrepondo
+          Positioned(
+            top: -28,
+            child: GestureDetector(
+              onTap: () => _showActionsBottomSheet(context),
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [colors.primary, colors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.primary.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -169,71 +228,64 @@ class HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: InkWell(
         onTap: () {
+          HapticFeedback.lightImpact();
           setState(() {
             _currentIndex = index;
           });
         },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            PhosphorIcon(
-              isActive ? activeIcon : icon,
-              size: 24,
-              color: isActive ? colors.yellowDark : colors.mediumGray,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                color: isActive ? colors.yellowDark : colors.mediumGray,
+        splashColor: colors.primary.withOpacity(0.1),
+        highlightColor: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Ícone com animação de cor
+              PhosphorIcon(
+                isActive ? activeIcon : icon,
+                size: 24,
+                color: isActive ? colors.primary : colors.mediumGray,
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Botão central de ações (maior e preto)
-  Widget _buildCentralActionButton(AppColors colors) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _showActionsBottomSheet(context),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: colors.darkGray,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.darkGray.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+              
+              const SizedBox(height: 2),
+              
+              // Label com animação de cor e overflow protegido
+              Flexible(
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                    color: isActive ? colors.primary : colors.mediumGray,
+                    letterSpacing: -0.3,
+                    height: 1.0,
                   ),
-                ],
-              ),
-              child: Center(
-                child: PhosphorIcon(
-                  PhosphorIcons.plus(PhosphorIconsStyle.bold),
-                  size: 28,
-                  color: colors.white,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.clip,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-            )
-                .animate(
-                  onPlay: (controller) => controller.forward(),
-                )
-                .scale(
-                  duration: 150.ms,
-                  curve: Curves.easeOut,
+              
+              // Indicador de aba ativa
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                margin: const EdgeInsets.only(top: 4),
+                height: 3,
+                width: isActive ? 20 : 0,
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -246,36 +298,73 @@ class HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
           color: colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          boxShadow: [
+            BoxShadow(
+              color: colors.darkGray.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Indicador de arrasto
+            // Indicador de arrasto melhorado
             Container(
-              width: 40,
-              height: 4,
+              width: 48,
+              height: 5,
               decoration: BoxDecoration(
-                color: colors.lightGray,
-                borderRadius: BorderRadius.circular(2),
+                color: colors.mediumGray.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
             const SizedBox(height: 24),
             
-            // Título
-            Text(
-              'Ações',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: colors.darkGray,
-              ),
+            // Título com ícone
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: PhosphorIcon(
+                    PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                    size: 24,
+                    color: colors.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ações Rápidas',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: colors.darkGray,
+                      ),
+                    ),
+                    Text(
+                      'Escolha uma ação para continuar',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colors.mediumGray,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             
             // Opções
             _buildActionOption(
@@ -341,7 +430,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Constrói uma opção de ação no bottom sheet
+  /// Constrói uma opção de ação no bottom sheet - Melhorado
   Widget _buildActionOption({
     required BuildContext context,
     required PhosphorIconData icon,
@@ -353,40 +442,60 @@ class HomeScreenState extends State<HomeScreen> {
   }) {
     final colors = AppConstants.colors;
     
-    return InkWell(
-      onTap: enabled ? onTap : null,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
+    return GestureDetector(
+      onTap: enabled ? () {
+        HapticFeedback.lightImpact();
+        onTap?.call();
+      } : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: enabled ? colors.lightGray : colors.lightGray.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(16),
+          color: enabled ? colors.white : colors.lightGray.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: enabled ? color.withValues(alpha: 0.2) : colors.mediumGray.withValues(alpha: 0.1),
-            width: 1,
+            color: enabled 
+              ? color.withOpacity(0.2) 
+              : colors.mediumGray.withOpacity(0.1),
+            width: 1.5,
           ),
+          boxShadow: enabled ? [
+            BoxShadow(
+              color: color.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ] : null,
         ),
         child: Row(
           children: [
-            // Ícone
+            // Ícone melhorado
             Container(
-              width: 48,
-              height: 48,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: enabled ? color.withValues(alpha: 0.15) : colors.mediumGray.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                gradient: enabled ? LinearGradient(
+                  colors: [
+                    color.withOpacity(0.15),
+                    color.withOpacity(0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ) : null,
+                color: enabled ? null : colors.mediumGray.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
                 child: PhosphorIcon(
                   icon,
-                  size: 24,
+                  size: 28,
                   color: enabled ? color : colors.mediumGray,
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 20),
             
-            // Texto
+            // Texto melhorado
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,30 +503,32 @@ class HomeScreenState extends State<HomeScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: enabled ? colors.darkGray : colors.mediumGray,
+                      letterSpacing: -0.2,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       color: colors.mediumGray,
+                      height: 1.3,
                     ),
                   ),
                 ],
               ),
             ),
             
-            // Seta ou badge "Em breve"
+            // Indicador visual
             if (!enabled)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: colors.mediumGray.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
+                  color: colors.mediumGray.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'Em breve',
@@ -442,9 +553,9 @@ class HomeScreenState extends State<HomeScreen> {
 
   /// Mostra seletor de cripto para transação (compra/venda)
   void _showCryptoSelectorForTransaction(BuildContext context, TransactionType type) {
-    // Carregar todas as moedas antes de mostrar o seletor
-    final cryptoController = context.read<CryptoController>();
-    cryptoController.loadCryptos(limit: 100, resetTimer: false);
+    // Não carrega mais moedas aqui para não sobrescrever a lista da home
+    // O seletor vai usar as moedas já carregadas
+    // Se o usuário quiser ver mais moedas, pode ir na aba Mercados
     
     showModalBottomSheet(
       context: context,
@@ -468,6 +579,10 @@ class _DashboardTab extends StatefulWidget {
 }
 
 class _DashboardTabState extends State<_DashboardTab> {
+  // Seleção múltipla
+  bool _isSelectionMode = false;
+  final Set<String> _selectedSymbols = {};
+
   @override
   void initState() {
     super.initState();
@@ -483,7 +598,7 @@ class _DashboardTabState extends State<_DashboardTab> {
     final portfolioController = context.read<PortfolioController>();
     final authController = context.read<AuthController>();
     
-    // Carregar criptos (top 10 por market cap para home)
+    // Carregar apenas top 10 criptos para o Dashboard
     await cryptoController.loadCryptos(limit: 10);
     
     // Carregar carteira e portfólio
@@ -511,70 +626,101 @@ class _DashboardTabState extends State<_DashboardTab> {
       appBar: AppBar(
         backgroundColor: colors.white,
         elevation: 0,
-        title: Row(
-          children: [
-            // Avatar do usuário
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colors.yellow, colors.yellowDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        leading: _isSelectionMode
+            ? IconButton(
+                icon: PhosphorIcon(
+                  PhosphorIcons.x(),
+                  size: 24,
+                  color: colors.darkGray,
                 ),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  'U',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colors.darkGray,
+                onPressed: _exitSelectionMode,
+              )
+            : null,
+        title: _isSelectionMode
+            ? Text(
+                '${_selectedSymbols.length} selecionadas',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: colors.darkGray,
+                ),
+              )
+            : Row(
+                children: [
+                  // Avatar do usuário
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [colors.primary, colors.secondary],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'U',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colors.white,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Home',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: colors.darkGray,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Home',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        actions: [
+          if (_isSelectionMode && _selectedSymbols.isNotEmpty)
+            IconButton(
+              icon: PhosphorIcon(
+                PhosphorIcons.star(PhosphorIconsStyle.fill),
+                size: 24,
+                color: colors.primaryDark,
+              ),
+              onPressed: _addSelectedToFavorites,
+              tooltip: 'Adicionar aos favoritos',
+            )
+          else if (!_isSelectionMode) ...[
+            // Botão de notificações
+            IconButton(
+              icon: PhosphorIcon(
+                PhosphorIcons.bell(),
+                size: 24,
                 color: colors.darkGray,
               ),
+              onPressed: () {
+                // TODO: Implementar notificações
+              },
+            ),
+            // Botão de configurações
+            IconButton(
+              icon: PhosphorIcon(
+                PhosphorIcons.gear(),
+                size: 24,
+                color: colors.darkGray,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
             ),
           ],
-        ),
-        actions: [
-          // Botão de notificações
-          IconButton(
-            icon: PhosphorIcon(
-              PhosphorIcons.bell(),
-              size: 24,
-              color: colors.darkGray,
-            ),
-            onPressed: () {
-              // TODO: Implementar notificações
-            },
-          ),
-          // Botão de configurações
-          IconButton(
-            icon: PhosphorIcon(
-              PhosphorIcons.gear(),
-              size: 24,
-              color: colors.darkGray,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(),
-                ),
-              );
-            },
-          ),
         ],
       ),
       body: SafeArea(
@@ -582,26 +728,26 @@ class _DashboardTabState extends State<_DashboardTab> {
           onRefresh: () async {
             await cryptoController.refreshPrices();
           },
-          color: colors.yellow,
+          color: colors.primary,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Card de Saldo Total - Preto Sofisticado
+                // Card de Saldo Total - Gradiente Azul → Roxo
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF1A1A1A), Color(0xFF2D2D2D)],
+                    gradient: LinearGradient(
+                      colors: [colors.primary, colors.secondary],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
+                        color: colors.primary.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -628,10 +774,10 @@ class _DashboardTabState extends State<_DashboardTab> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: colors.yellow.withValues(alpha: 0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: colors.yellow.withValues(alpha: 0.3),
+                                color: Colors.white.withValues(alpha: 0.3),
                                 width: 1,
                               ),
                             ),
@@ -640,7 +786,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                                 Icon(
                                   Icons.trending_up,
                                   size: 14,
-                                  color: colors.yellowDark,
+                                  color: Colors.white,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -648,7 +794,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: colors.yellowDark,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
@@ -665,7 +811,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                                   height: 24,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -794,15 +940,15 @@ class _DashboardTabState extends State<_DashboardTab> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              colors.yellow.withValues(alpha: 0.1),
-                              colors.yellow.withValues(alpha: 0.05),
+                              colors.primary.withValues(alpha: 0.1),
+                              colors.primary.withValues(alpha: 0.05),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: colors.yellow.withValues(alpha: 0.3),
+                            color: colors.primary.withValues(alpha: 0.3),
                             width: 1.5,
                           ),
                         ),
@@ -814,13 +960,13 @@ class _DashboardTabState extends State<_DashboardTab> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: colors.yellow.withValues(alpha: 0.15),
+                                    color: colors.primary.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: PhosphorIcon(
                                     PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
                                     size: 20,
-                                    color: colors.yellowDark,
+                                    color: colors.primaryDark,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -850,6 +996,11 @@ class _DashboardTabState extends State<_DashboardTab> {
                   ],
                 ),
                 
+                const SizedBox(height: 24),
+                
+                // Card de Favoritos
+                _buildFavoritesCard(context, colors),
+                
                 const SizedBox(height: 32),
                 
                 // Seção de Criptomoedas
@@ -874,7 +1025,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                               height: 12,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(colors.yellowDark),
+                                valueColor: AlwaysStoppedAnimation<Color>(colors.primaryDark),
                               ),
                             ),
                           ),
@@ -916,28 +1067,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                 const SizedBox(height: 16),
                 
                 // Lista de criptos
-                if (cryptoController.isLoading && cryptoController.cryptos.isEmpty)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Carregando criptomoedas...',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colors.mediumGray,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else if (cryptoController.error != null)
+                if (cryptoController.error != null)
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32),
@@ -959,47 +1089,100 @@ class _DashboardTabState extends State<_DashboardTab> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => cryptoController.loadCryptos(limit: 10),
+                            onPressed: () => cryptoController.loadCryptos(limit: 100),
                             child: const Text('Tentar Novamente'),
                           ),
                         ],
                       ),
                     ),
                   )
-                else if (cryptoController.cryptos.isEmpty)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Text(
-                        'Nenhuma criptomoeda encontrada',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: colors.mediumGray,
-                        ),
-                      ),
-                    ),
-                  )
-                else
+                else if (cryptoController.cryptos.isNotEmpty)
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: cryptoController.cryptos.length,
+                    itemCount: cryptoController.cryptos.length > 10 ? 10 : cryptoController.cryptos.length,
                     separatorBuilder: (context, index) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final crypto = cryptoController.cryptos[index];
-                      return CryptoListItem(
-                        crypto: crypto,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CryptoDetailScreen(
-                                crypto: crypto,
-                              ),
+                      final isSelected = _selectedSymbols.contains(crypto.symbol);
+                      
+                      return GestureDetector(
+                        onLongPress: () => _enterSelectionMode(crypto.symbol),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            color: isSelected ? colors.primary.withOpacity(0.1) : colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isSelected ? colors.primary : colors.veryLightGray,
+                              width: isSelected ? 2 : 1,
                             ),
-                          );
-                        },
-                      );
+                          ),
+                          child: Stack(
+                            children: [
+                              CryptoListItem(
+                                crypto: crypto,
+                                showFavorite: !_isSelectionMode,
+                                isInSelectionMode: _isSelectionMode,
+                                onTap: _isSelectionMode
+                                    ? () => _toggleSelection(crypto.symbol)
+                                    : () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => CryptoDetailScreen(
+                                              crypto: crypto,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                              ),
+                              
+                              // Checkbox de seleção
+                              if (_isSelectionMode)
+                                Positioned(
+                                  right: 16,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Center(
+                                    child: AnimatedScale(
+                                      scale: isSelected ? 1.0 : 0.8,
+                                      duration: const Duration(milliseconds: 200),
+                                      child: Container(
+                                        width: 24,
+                                        height: 24,
+                                        decoration: BoxDecoration(
+                                          color: isSelected ? colors.primary : colors.white,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: isSelected ? colors.primary : colors.mediumGray,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: isSelected
+                                            ? Icon(
+                                                Icons.check,
+                                                size: 16,
+                                                color: colors.white,
+                                              )
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ).animate()
+                        .fadeIn(
+                          duration: 300.ms,
+                          delay: (index * 50).ms,
+                        )
+                        .slideY(
+                          begin: 0.1,
+                          duration: 300.ms,
+                          delay: (index * 50).ms,
+                        );
                     },
                   ),
               ],
@@ -1022,5 +1205,161 @@ class _DashboardTabState extends State<_DashboardTab> {
     if (!controller.hasAssets) return colors.darkGray;
     final roundedPL = controller.totalProfitLoss.abs() < 0.01 ? 0.0 : controller.totalProfitLoss;
     return roundedPL >= 0 ? colors.success : colors.error;
+  }
+
+  void _enterSelectionMode(String initialSymbol) {
+    setState(() {
+      _isSelectionMode = true;
+      _selectedSymbols.add(initialSymbol);
+    });
+  }
+
+  void _exitSelectionMode() {
+    setState(() {
+      _isSelectionMode = false;
+      _selectedSymbols.clear();
+    });
+  }
+
+  void _toggleSelection(String symbol) {
+    setState(() {
+      if (_selectedSymbols.contains(symbol)) {
+        _selectedSymbols.remove(symbol);
+        
+        // Sair do modo de seleção se não houver mais seleções
+        if (_selectedSymbols.isEmpty) {
+          _isSelectionMode = false;
+        }
+      } else {
+        _selectedSymbols.add(symbol);
+      }
+    });
+  }
+
+  Future<void> _addSelectedToFavorites() async {
+    final authController = context.read<AuthController>();
+    final favoritesController = context.read<FavoritesController>();
+    final userId = authController.currentUser?.id;
+
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Faça login para adicionar favoritos'),
+          backgroundColor: AppConstants.colors.error,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Adicionar todos os selecionados
+      for (final symbol in _selectedSymbols) {
+        await favoritesController.addFavorite(userId, symbol);
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${_selectedSymbols.length} favorito(s) adicionado(s)'),
+            backgroundColor: AppConstants.colors.success,
+          ),
+        );
+      }
+
+      _exitSelectionMode();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao adicionar favoritos'),
+            backgroundColor: AppConstants.colors.error,
+          ),
+        );
+      }
+    }
+  }
+  
+  /// Card de acesso rápido aos favoritos
+  Widget _buildFavoritesCard(BuildContext context, AppColors colors) {
+    final favoritesController = context.watch<FavoritesController>();
+    final favoritesCount = favoritesController.favoriteSymbols.length;
+    
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const FavoritesScreen(),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colors.primary.withOpacity(0.1),
+              colors.primary.withOpacity(0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: colors.primary.withOpacity(0.3),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.primary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: PhosphorIcon(
+                PhosphorIcons.star(PhosphorIconsStyle.fill),
+                size: 24,
+                color: colors.primaryDark,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Meus Favoritos',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: colors.darkGray,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    favoritesCount > 0
+                        ? '$favoritesCount ${favoritesCount == 1 ? "criptomoeda" : "criptomoedas"}'
+                        : 'Nenhuma cripto favoritada',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.mediumGray,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PhosphorIcon(
+              PhosphorIcons.caretRight(),
+              size: 20,
+              color: colors.mediumGray,
+            ),
+          ],
+        ),
+      ),
+    ).animate()
+      .fadeIn(duration: 300.ms)
+      .slideX(begin: -0.1, duration: 300.ms, curve: Curves.easeOut);
   }
 }

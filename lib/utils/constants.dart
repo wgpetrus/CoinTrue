@@ -36,11 +36,14 @@ class AppColors {
   /// Cor cinza muito claro - Borders e dividers
   final Color veryLightGray = const Color(0xFFF0F0F0);
 
-  /// Cor amarela - Botões primários e fundos
-  final Color yellow = const Color(0xFFFFE70F);
+  /// Cor azul primária - Botões primários e fundos
+  final Color primary = const Color(0xFF2563EB);
 
-  /// Cor amarela escura - Para ícones e textos em fundo branco (melhor contraste)
-  final Color yellowDark = const Color(0xFFFFC107);
+  /// Cor azul escura - Para ícones e textos em fundo branco (melhor contraste)
+  final Color primaryDark = const Color(0xFF1E40AF);
+
+  /// Cor roxa secundária - Elementos secundários e gradientes
+  final Color secondary = const Color(0xFF7C3AED);
 
   // Cores de status
   /// Cor para estados de erro e valores negativos

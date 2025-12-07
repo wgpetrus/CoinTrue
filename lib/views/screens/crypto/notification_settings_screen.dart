@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,9 @@ class NotificationSettingsScreen extends StatefulWidget {
 }
 
 class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+  // Estado de loading
+  bool _isLoading = false;
+  
   // Resumo do Portfólio
   bool _portfolioSummaryEnabled = false;
   String _portfolioFrequency = 'daily'; // daily, weekly
@@ -129,11 +133,21 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notificações'),
+        backgroundColor: AppConstants.colors.white,
+        elevation: 0,
+        title: Text(
+          'Notificações',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppConstants.colors.darkGray,
+          ),
+        ),
         leading: IconButton(
           icon: PhosphorIcon(
             PhosphorIcons.arrowLeft(),
             size: 24,
+            color: AppConstants.colors.darkGray,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -225,6 +239,51 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           ),
           
           const SizedBox(height: 24),
+          
+          // Botão de Teste (DEBUG)
+          if (kDebugMode) ...[
+            _buildSection(
+              title: 'DEBUG',
+              children: [
+                _buildDebugButton(
+                  icon: PhosphorIcons.testTube(),
+                  title: 'Enviar Notificação de Teste',
+                  onTap: () async {
+                    final notificationController = context.read<NotificationController>();
+                    await notificationController.sendTestNotification();
+                    
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Notificação de teste enviada!'),
+                          backgroundColor: AppConstants.colors.success,
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const Divider(height: 1),
+                _buildDebugButton(
+                  icon: PhosphorIcons.listBullets(),
+                  title: 'Listar Notificações Agendadas',
+                  onTap: () async {
+                    final notificationController = context.read<NotificationController>();
+                    await notificationController.listScheduledNotifications();
+                    
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Verifique o console para ver as notificações'),
+                          backgroundColor: AppConstants.colors.info,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+          ],
         ],
       ),
     );
@@ -320,7 +379,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: colors.yellow,
+            activeColor: colors.primary,
           ),
         ],
       ),
@@ -570,7 +629,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? colors.yellow : colors.lightGray,
+          color: isSelected ? colors.primary : colors.lightGray,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
@@ -582,6 +641,56 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               color: isSelected ? colors.white : colors.darkGray,
             ),
           ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildDebugButton({
+    required PhosphorIconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    final colors = AppConstants.colors;
+    
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: colors.info.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: PhosphorIcon(
+                  icon,
+                  size: 20,
+                  color: colors.info,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colors.darkGray,
+                ),
+              ),
+            ),
+            PhosphorIcon(
+              PhosphorIcons.caretRight(),
+              size: 20,
+              color: colors.mediumGray,
+            ),
+          ],
         ),
       ),
     );

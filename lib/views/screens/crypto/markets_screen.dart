@@ -2,11 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/constants.dart';
+import '../../../controllers/auth_controller.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
+import '../../../controllers/favorites_controller.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../widgets/crypto/crypto_list_item.dart';
 import 'crypto_detail_screen.dart';
+import 'favorites_screen.dart';
 
 /// Mercados Screen (Fase 4)
 /// 
@@ -27,6 +31,10 @@ class _MarketsScreenState extends State<MarketsScreen> {
   final List<String> _filters = ['Todos', 'Maiores Altas', 'Maiores Baixas'];
   List<Crypto> _searchResults = [];
   bool _isSearching = false;
+  
+  // Seleção múltipla
+  bool _isSelectionMode = false;
+  final Set<String> _selectedSymbols = {};
 
   @override
   void initState() {
@@ -44,35 +52,23 @@ class _MarketsScreenState extends State<MarketsScreen> {
     await cryptoController.loadCryptos(limit: 100, resetTimer: false);
   }
 
-  Future<void> _performSearch(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _searchQuery = '';
-        _searchResults = [];
-        _isSearching = false;
-      });
-      return;
-    }
-
+  void _performSearch(String query) {
     setState(() {
       _searchQuery = query;
-      _isSearching = true;
-    });
-
-    try {
-      final cryptoController = context.read<CryptoController>();
-      final results = await cryptoController.searchCryptos(query);
+      _isSearching = false;
       
-      setState(() {
-        _searchResults = results;
-        _isSearching = false;
-      });
-    } catch (e) {
-      debugPrint('Error searching: $e');
-      setState(() {
-        _isSearching = false;
-      });
-    }
+      if (query.isEmpty) {
+        _searchResults = [];
+      } else {
+        final cryptoController = context.read<CryptoController>();
+        final queryLower = query.toLowerCase();
+        
+        _searchResults = cryptoController.cryptos.where((crypto) {
+          return crypto.name.toLowerCase().contains(queryLower) ||
+                 crypto.symbol.toLowerCase().contains(queryLower);
+        }).toList();
+      }
+    });
   }
 
   List<Crypto> _getFilteredCryptos(List<Crypto> cryptos) {
@@ -104,30 +100,84 @@ class _MarketsScreenState extends State<MarketsScreen> {
       appBar: AppBar(
         backgroundColor: colors.white,
         elevation: 0,
+        leading: _isSelectionMode
+            ? IconButton(
+                icon: PhosphorIcon(
+                  PhosphorIcons.x(),
+                  size: 24,
+                ),
+                onPressed: _exitSelectionMode,
+              )
+            : null,
         title: Text(
-          'Mercados',
+          _isSelectionMode 
+              ? '${_selectedSymbols.length} selecionadas'
+              : 'Mercados',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: colors.darkGray,
           ),
         ),
+        actions: [
+          if (_isSelectionMode && _selectedSymbols.isNotEmpty)
+            IconButton(
+              icon: PhosphorIcon(
+                PhosphorIcons.star(PhosphorIconsStyle.fill),
+                size: 24,
+                color: colors.primaryDark,
+              ),
+              onPressed: _addSelectedToFavorites,
+              tooltip: 'Adicionar aos favoritos',
+            )
+          else if (!_isSelectionMode)
+            IconButton(
+              icon: PhosphorIcon(
+                PhosphorIcons.star(),
+                size: 24,
+                color: colors.darkGray,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FavoritesScreen(),
+                  ),
+                );
+              },
+              tooltip: 'Ver favoritos',
+            ),
+        ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
             await cryptoController.refreshPrices();
           },
-          color: colors.yellow,
+          color: colors.primary,
           child: Column(
             children: [
-              // Campo de busca (Fase 4.2)
+              // Campo de busca (Fase 4.2) - Melhorado
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: colors.lightGray,
+                    gradient: LinearGradient(
+                      colors: [
+                        colors.primary.withValues(alpha: 0.08),
+                        colors.primary.withValues(alpha: 0.04),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _searchQuery.isNotEmpty 
+                        ? colors.primary.withValues(alpha: 0.3)
+                        : Colors.transparent,
+                      width: 2,
+                    ),
                   ),
                   child: TextField(
                     onChanged: (value) {
@@ -144,9 +194,39 @@ class _MarketsScreenState extends State<MarketsScreen> {
                         child: PhosphorIcon(
                           PhosphorIcons.magnifyingGlass(),
                           size: 20,
-                          color: colors.mediumGray,
+                          color: _searchQuery.isNotEmpty 
+                            ? colors.primaryDark 
+                            : colors.mediumGray,
                         ),
                       ),
+                      suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: PhosphorIcon(
+                              PhosphorIcons.x(),
+                              size: 20,
+                              color: colors.mediumGray,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _searchQuery = '';
+                                _searchResults = [];
+                                _isSearching = false;
+                              });
+                            },
+                          )
+                        : _isSearching
+                          ? Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                                ),
+                              ),
+                            )
+                          : null,
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -181,7 +261,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected ? colors.yellow : colors.lightGray,
+                          color: isSelected ? colors.primary : colors.lightGray,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Center(
@@ -190,7 +270,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: isSelected ? colors.darkGray : colors.mediumGray,
+                              color: isSelected ? colors.white : colors.mediumGray,
                             ),
                           ),
                         ),
@@ -210,7 +290,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+                              valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -243,21 +323,70 @@ class _MarketsScreenState extends State<MarketsScreen> {
   }) {
     if (cryptoController.isLoading && cryptoController.cryptos.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(colors.yellow),
+        child: Container(
+          margin: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(40),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                colors.primary.withValues(alpha: 0.1),
+                colors.secondary.withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Carregando mercados...',
-              style: TextStyle(
-                fontSize: 14,
-                color: colors.mediumGray,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: colors.primary.withValues(alpha: 0.2),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [colors.primary, colors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.white),
+                    strokeWidth: 3,
+                  ),
+                ),
+              ).animate(
+                onPlay: (controller) => controller.repeat(),
+              ).scale(
+                duration: 1000.ms,
+                begin: const Offset(0.95, 0.95),
+                end: const Offset(1.05, 1.05),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Text(
+                'Carregando mercados...',
+                style: TextStyle(
+                  color: colors.darkGray,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Aguarde um momento',
+                style: TextStyle(
+                  color: colors.mediumGray,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -287,8 +416,8 @@ class _MarketsScreenState extends State<MarketsScreen> {
               ElevatedButton(
                 onPressed: _loadMarkets,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.yellow,
-                  foregroundColor: colors.darkGray,
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.white,
                 ),
                 child: const Text('Tentar Novamente'),
               ),
@@ -332,20 +461,149 @@ class _MarketsScreenState extends State<MarketsScreen> {
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final crypto = filteredCryptos[index];
-        return CryptoListItem(
-          crypto: crypto,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CryptoDetailScreen(
-                  crypto: crypto,
-                ),
+        final isSelected = _selectedSymbols.contains(crypto.symbol);
+        
+        return GestureDetector(
+          onLongPress: () => _enterSelectionMode(crypto.symbol),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              color: isSelected ? colors.primary.withOpacity(0.1) : colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? colors.primary : colors.veryLightGray,
+                width: isSelected ? 2 : 1,
               ),
-            );
-          },
+            ),
+            child: Stack(
+              children: [
+                CryptoListItem(
+                  crypto: crypto,
+                  showFavorite: !_isSelectionMode,
+                  isInSelectionMode: _isSelectionMode,
+                  onTap: _isSelectionMode
+                      ? () => _toggleSelection(crypto.symbol)
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CryptoDetailScreen(
+                                crypto: crypto,
+                              ),
+                            ),
+                          );
+                        },
+                ),
+                
+                // Checkbox de seleção
+                if (_isSelectionMode)
+                  Positioned(
+                    right: 16,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: AnimatedScale(
+                        scale: isSelected ? 1.0 : 0.8,
+                        duration: const Duration(milliseconds: 200),
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: isSelected ? colors.primary : colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected ? colors.primary : colors.mediumGray,
+                              width: 2,
+                            ),
+                          ),
+                          child: isSelected
+                              ? Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color: colors.white,
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         );
       },
     );
+  }
+  
+  void _enterSelectionMode(String initialSymbol) {
+    setState(() {
+      _isSelectionMode = true;
+      _selectedSymbols.add(initialSymbol);
+    });
+  }
+
+  void _exitSelectionMode() {
+    setState(() {
+      _isSelectionMode = false;
+      _selectedSymbols.clear();
+    });
+  }
+
+  void _toggleSelection(String symbol) {
+    setState(() {
+      if (_selectedSymbols.contains(symbol)) {
+        _selectedSymbols.remove(symbol);
+        
+        // Sair do modo de seleção se não houver mais seleções
+        if (_selectedSymbols.isEmpty) {
+          _isSelectionMode = false;
+        }
+      } else {
+        _selectedSymbols.add(symbol);
+      }
+    });
+  }
+
+  Future<void> _addSelectedToFavorites() async {
+    final authController = context.read<AuthController>();
+    final favoritesController = context.read<FavoritesController>();
+    final userId = authController.currentUser?.id;
+
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Faça login para adicionar favoritos'),
+          backgroundColor: AppConstants.colors.error,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Adicionar todos os selecionados
+      for (final symbol in _selectedSymbols) {
+        await favoritesController.addFavorite(userId, symbol);
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${_selectedSymbols.length} favorito(s) adicionado(s)'),
+            backgroundColor: AppConstants.colors.success,
+          ),
+        );
+      }
+
+      _exitSelectionMode();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Erro ao adicionar favoritos'),
+            backgroundColor: AppConstants.colors.error,
+          ),
+        );
+      }
+    }
   }
 }

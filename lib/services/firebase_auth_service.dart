@@ -35,51 +35,77 @@ class FirebaseAuthService implements AuthService {
   @override
   Future<User> signInWithGoogle() async {
     try {
+      debugPrint('🔵 [1/7] Iniciando Google Sign-In...');
+      
       // Start Google Sign-In flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      
+      debugPrint('🔵 [2/7] Google Sign-In retornou: ${googleUser?.email ?? "null"}');
 
       // User cancelled the sign-in
       if (googleUser == null) {
+        debugPrint('🔵 Usuário cancelou o login');
         throw const AuthException.cancelled();
       }
 
+      debugPrint('🔵 [3/7] Obtendo credenciais do Google...');
+      
       // Obtain auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      
+      debugPrint('🔵 [4/7] Credenciais obtidas - accessToken: ${googleAuth.accessToken != null}, idToken: ${googleAuth.idToken != null}');
 
+      debugPrint('🔵 [5/7] Criando credencial Firebase...');
+      
       // Create a new credential
       final credential = firebase_auth.GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
+      debugPrint('🔵 [6/7] Fazendo login no Firebase...');
+      
       // Sign in to Firebase with the credential
       final firebase_auth.UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(credential);
 
+      debugPrint('🔵 [7/7] Login Firebase completo - UID: ${userCredential.user?.uid}');
+
       if (userCredential.user == null) {
+        debugPrint('❌ ERRO: userCredential.user é null!');
         throw const AuthException.invalidCredentials();
       }
 
       // Check if this is a new user
-      final bool isNewUser = await _isNewUser(userCredential.user!.uid);
+      bool isNewUser = false;
+      bool profileComplete = false;
+      
+      try {
+        isNewUser = await _isNewUser(userCredential.user!.uid);
 
-      // Get profileComplete status from Firestore
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
+        // Get profileComplete status from Firestore
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
 
-      final bool profileComplete = userDoc.exists
-          ? (userDoc.data()?['profileComplete'] as bool? ?? false)
-          : false;
+        profileComplete = userDoc.exists
+            ? (userDoc.data()?['profileComplete'] as bool? ?? false)
+            : false;
 
-      debugPrint('🔵 Google Login - User: ${userCredential.user!.uid}');
-      debugPrint('🔵 isNewUser: $isNewUser');
-      debugPrint('🔵 userDoc.exists: ${userDoc.exists}');
-      debugPrint('🔵 profileComplete: $profileComplete');
-      if (userDoc.exists) {
-        debugPrint('🔵 Firestore data: ${userDoc.data()}');
+        debugPrint('🔵 Google Login - User: ${userCredential.user!.uid}');
+        debugPrint('🔵 isNewUser: $isNewUser');
+        debugPrint('🔵 userDoc.exists: ${userDoc.exists}');
+        debugPrint('🔵 profileComplete: $profileComplete');
+        if (userDoc.exists) {
+          debugPrint('🔵 Firestore data: ${userDoc.data()}');
+        }
+      } catch (firestoreError) {
+        // If Firestore fails, continue with default values
+        debugPrint('⚠️ Firestore error (continuing with defaults): $firestoreError');
+        isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+        profileComplete = false;
       }
 
       // Create User object
@@ -90,8 +116,13 @@ class FirebaseAuthService implements AuthService {
         profileComplete: profileComplete,
       );
 
-      // Create or update user record in Firestore
-      await _createUserRecord(user);
+      // Try to create or update user record in Firestore
+      try {
+        await _createUserRecord(user);
+      } catch (firestoreError) {
+        // If Firestore fails, log but continue - user is still authenticated
+        debugPrint('⚠️ Failed to create user record in Firestore: $firestoreError');
+      }
 
       return user;
     } on firebase_auth.FirebaseAuthException catch (e) {
@@ -102,7 +133,10 @@ class FirebaseAuthService implements AuthService {
       throw const NetworkException.timeout();
     } catch (e, stackTrace) {
       if (e is AppException) rethrow;
-      debugPrint('Error in signInWithGoogle: $e');
+      debugPrint('❌ ERRO CRÍTICO em signInWithGoogle: $e');
+      debugPrint('❌ Tipo do erro: ${e.runtimeType}');
+      debugPrint('❌ StackTrace completo:');
+      debugPrint('$stackTrace');
       debugPrint('StackTrace: $stackTrace');
       throw UnexpectedException(
         'Erro ao fazer login com Google',
@@ -138,17 +172,27 @@ class FirebaseAuthService implements AuthService {
       }
 
       // Check if this is a new user
-      final bool isNewUser = await _isNewUser(userCredential.user!.uid);
+      bool isNewUser = false;
+      bool profileComplete = false;
+      
+      try {
+        isNewUser = await _isNewUser(userCredential.user!.uid);
 
-      // Get profileComplete status from Firestore
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
+        // Get profileComplete status from Firestore
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
 
-      final bool profileComplete = userDoc.exists
-          ? (userDoc.data()?['profileComplete'] as bool? ?? false)
-          : false;
+        profileComplete = userDoc.exists
+            ? (userDoc.data()?['profileComplete'] as bool? ?? false)
+            : false;
+      } catch (firestoreError) {
+        // If Firestore fails, continue with default values
+        debugPrint('⚠️ Firestore error (continuing with defaults): $firestoreError');
+        isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+        profileComplete = false;
+      }
 
       // Create User object
       final user = User.fromFirebase(
@@ -158,9 +202,14 @@ class FirebaseAuthService implements AuthService {
         profileComplete: profileComplete,
       );
 
-      // If new user, create basic record in Firestore
-      if (isNewUser) {
-        await _createUserRecord(user);
+      // Try to create user record in Firestore
+      try {
+        if (isNewUser) {
+          await _createUserRecord(user);
+        }
+      } catch (firestoreError) {
+        // If Firestore fails, log but continue - user is still authenticated
+        debugPrint('⚠️ Failed to create user record in Firestore: $firestoreError');
       }
 
       return user;
@@ -214,21 +263,29 @@ class FirebaseAuthService implements AuthService {
       }
 
       // Check if user exists in Firestore
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .get();
+      bool profileComplete = false;
+      
+      try {
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .get();
 
-      final bool profileComplete = userDoc.exists
-          ? (userDoc.data()?['profileComplete'] as bool? ?? false)
-          : false;
+        profileComplete = userDoc.exists
+            ? (userDoc.data()?['profileComplete'] as bool? ?? false)
+            : false;
 
-      debugPrint('⚪ getCurrentUser - userDoc.exists: ${userDoc.exists}');
-      debugPrint('⚪ getCurrentUser - profileComplete: $profileComplete');
-      if (userDoc.exists) {
-        debugPrint('⚪ getCurrentUser - Firestore data: ${userDoc.data()}');
-      } else {
-        debugPrint('⚪ getCurrentUser - WARNING: User document does NOT exist in Firestore!');
+        debugPrint('⚪ getCurrentUser - userDoc.exists: ${userDoc.exists}');
+        debugPrint('⚪ getCurrentUser - profileComplete: $profileComplete');
+        if (userDoc.exists) {
+          debugPrint('⚪ getCurrentUser - Firestore data: ${userDoc.data()}');
+        } else {
+          debugPrint('⚪ getCurrentUser - WARNING: User document does NOT exist in Firestore!');
+        }
+      } catch (firestoreError) {
+        // If Firestore fails, continue with default value
+        debugPrint('⚪ getCurrentUser - Firestore error (using default): $firestoreError');
+        profileComplete = false;
       }
 
       return User.fromFirebase(
@@ -239,10 +296,8 @@ class FirebaseAuthService implements AuthService {
       );
     } catch (e) {
       debugPrint('⚪ getCurrentUser - ERROR: $e');
-      throw UnexpectedException(
-        'Erro ao recuperar usuário atual',
-        e,
-      );
+      // Don't throw error - return null instead to allow offline mode
+      return null;
     }
   }
 
@@ -266,20 +321,28 @@ class FirebaseAuthService implements AuthService {
       }
 
       // Check if user exists in Firestore and get profileComplete status
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
+      bool profileComplete = false;
+      
+      try {
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
 
-      final bool profileComplete = userDoc.exists
-          ? (userDoc.data()?['profileComplete'] as bool? ?? false)
-          : false;
+        profileComplete = userDoc.exists
+            ? (userDoc.data()?['profileComplete'] as bool? ?? false)
+            : false;
 
-      debugPrint('🔴 Email Login - User: ${userCredential.user!.uid}');
-      debugPrint('🔴 userDoc.exists: ${userDoc.exists}');
-      debugPrint('🔴 profileComplete: $profileComplete');
-      if (userDoc.exists) {
-        debugPrint('🔴 Firestore data: ${userDoc.data()}');
+        debugPrint('🔴 Email Login - User: ${userCredential.user!.uid}');
+        debugPrint('🔴 userDoc.exists: ${userDoc.exists}');
+        debugPrint('🔴 profileComplete: $profileComplete');
+        if (userDoc.exists) {
+          debugPrint('🔴 Firestore data: ${userDoc.data()}');
+        }
+      } catch (firestoreError) {
+        // If Firestore fails, continue with default value
+        debugPrint('🔴 Firestore error (using default): $firestoreError');
+        profileComplete = false;
       }
 
       // Create User object

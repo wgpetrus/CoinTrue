@@ -184,6 +184,9 @@ class CoinGeckoApiService implements CryptoApiService {
     try {
       debugPrint('📊 [COINGECKO] Fetching chart data for $coinId ($period)');
       
+      // Obter taxa de câmbio para converter USD → BRL
+      final usdToBrl = await _getExchangeRate();
+      
       final response = await _client.get(
         Uri.parse('$baseUrl/coins/$coinId/market_chart?vs_currency=usd&days=$days'),
         headers: {'Accept': 'application/json'},
@@ -200,11 +203,12 @@ class CoinGeckoApiService implements CryptoApiService {
         
         final spots = <FlSpot>[];
         for (int i = 0; i < prices.length; i++) {
-          final price = (prices[i][1] as num).toDouble();
-          spots.add(FlSpot(i.toDouble(), price));
+          final priceUsd = (prices[i][1] as num).toDouble();
+          final priceBrl = priceUsd * usdToBrl; // Converter para BRL
+          spots.add(FlSpot(i.toDouble(), priceBrl));
         }
         
-        debugPrint('✅ [COINGECKO] Loaded ${spots.length} chart points');
+        debugPrint('✅ [COINGECKO] Loaded ${spots.length} chart points (converted to BRL)');
         return spots;
       } else {
         throw Exception('CoinGecko API error: ${response.statusCode}');

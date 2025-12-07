@@ -14,3 +14,6 @@ export 'local_auth_service.dart';
 // Preferences services
 export 'preferences_service.dart';
 export 'shared_preferences_service.dart';
+
+// Initialization services
+export 'initialization_service.dart';

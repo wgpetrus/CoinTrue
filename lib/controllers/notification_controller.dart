@@ -179,5 +179,29 @@ class NotificationController extends ChangeNotifier {
     );
   }
 
+  /// Envia notificação de teste (DEBUG)
+  Future<void> sendTestNotification() async {
+    if (!_hasPermission) {
+      debugPrint('❌ No permission for notifications');
+      return;
+    }
 
+    await _notificationService.showNotification(
+      id: 999,
+      title: '🧪 Notificação de Teste',
+      body: 'Se você está vendo isso, as notificações estão funcionando!',
+      payload: 'test',
+    );
+    
+    debugPrint('✅ Test notification sent');
+  }
+
+  /// Lista notificações agendadas (DEBUG)
+  Future<void> listScheduledNotifications() async {
+    final pending = await _notificationService.getPendingNotifications();
+    debugPrint('📋 Pending notifications: ${pending.length}');
+    for (final notification in pending) {
+      debugPrint('  - ID: ${notification.id}, Title: ${notification.title}');
+    }
+  }
 }
