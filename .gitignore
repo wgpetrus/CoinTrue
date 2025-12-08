@@ -101,10 +101,18 @@ macos/Flutter/GeneratedPluginRegistrant.swift
 macos/Flutter/ephemeral
 
 # Firebase
-# NOTA: firebase_options.dart DEVE estar no repositório (não contém secrets)
-# Apenas os arquivos de configuração específicos de plataforma são privados
-google-services.json
-GoogleService-Info.plist
+# IMPORTANTE: firebase_options.dart é SEGURO commitar (gerado pelo FlutterFire CLI)
+# As API Keys nele são públicas e vão no app. Segurança vem das regras do Firebase.
+# 
+# Arquivos PRIVADOS que NUNCA devem ser commitados:
+**/google-services.json                 # Android - contém OAuth IDs e secrets
+**/GoogleService-Info.plist             # iOS - contém OAuth IDs e secrets
+**/firebase-adminsdk-*.json             # Service Account Keys - MUITO SENSÍVEL
+firebase-debug.log
+firebase.json
+storage.rules
+.firebase/
+.firebaserc
 
 # Environment variables
 .env
@@ -126,6 +134,12 @@ test_startup.dart
 *.mocks.dart
 *.config.dart
 
+# Node.js (Firebase Functions)
+**/node_modules/
+**/package-lock.json
+**/lib/                                 # Compiled JS from TS
+**/.runtimeconfig.json                  # Firebase Functions runtime config
+
 # Temporary files
 *.tmp
 *.temp
@@ -144,6 +158,12 @@ $RECYCLE.BIN/
 # Kiro IDE
 .kiro/cache/
 .kiro/logs/
+
+# IDE specific
+*.iml
+.idea/
+.vscode/settings.json
+.vscode/launch.json
 
 # Build artifacts
 *.apk
