@@ -101,9 +101,10 @@ macos/Flutter/GeneratedPluginRegistrant.swift
 macos/Flutter/ephemeral
 
 # Firebase
+# NOTA: firebase_options.dart DEVE estar no repositório (não contém secrets)
+# Apenas os arquivos de configuração específicos de plataforma são privados
 google-services.json
 GoogleService-Info.plist
-lib/core/config/firebase_options.dart
 
 # Environment variables
 .env
