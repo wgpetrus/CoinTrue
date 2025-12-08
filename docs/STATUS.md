@@ -216,4 +216,4 @@ O projeto CoinTrue está no caminho certo, com todas as features principais impl
 
 ---
 
-**Última atualização:** 08/12/2024 - Dark Mode 100% + Correções Finais ✨
+**Última atualização:** 08/12/2025 - Dark Mode 100% + Correções Finais ✨
