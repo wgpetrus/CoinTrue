@@ -1,23 +1,25 @@
 # 🎨 Guia de UI/UX
 
-Guia completo do Design System do CoinTrue.
+Guia completo do Design System do CoinTrue com suporte a **Light e Dark Mode**.
 
 ---
 
 ## 🎨 Paleta de Cores
 
-### Cores Principais
+### Light Mode (Padrão)
 
 ```dart
-// Amarelo - Cor primária
-primary:        #FFE70F  // Botões, destaques, ações principais
-primaryDark:    #FFC107  // Ícones, variações
+// Azul/Roxo - Cores primárias
+primary:        #2563EB  // Azul vibrante - Botões, fundos, elementos ativos
+primaryDark:    #1E40AF  // Azul profundo - Ícones e textos em fundo branco
+secondary:      #7C3AED  // Roxo - Elementos secundários, gradientes
 
 // Neutras
 white:          #FFFFFF  // Backgrounds, textos em fundos escuros
 darkGray:       #545454  // Textos principais
 mediumGray:     #9E9E9E  // Textos secundários
 lightGray:      #F5F5F5  // Backgrounds de cards
+veryLightGray:  #F0F0F0  // Borders e dividers
 
 // Status
 success:        #4CAF50  // Verde - Compras, positivo
@@ -31,16 +33,47 @@ cardano:        #2196F3  // Azul
 solana:         #E91E63  // Rosa/Magenta
 ```
 
-### Uso de Cores
+### Dark Mode 🌙
 
-| Elemento | Cor | Contraste |
-|----------|-----|-----------|
-| Botão Primário | Amarelo (#FFE70F) | Texto Branco |
-| Botão Secundário | Branco | Texto Escuro |
-| Background | Branco | - |
-| Card | Cinza Claro (#F5F5F5) | - |
-| Texto Principal | Cinza Escuro (#545454) | - |
-| Texto Secundário | Cinza Médio (#9E9E9E) | - |
+```dart
+// Backgrounds (mais escuros)
+background:     #0F0F0F  // Preto OLED - Background principal
+surface:        #1A1A1A  // Cinza escuro - Cards e containers
+surfaceElevated: #242424  // Cinza mais claro - Cards elevados
+
+// Textos (mais claros)
+onBackground:   #E8E8E8  // Branco suave - Textos primários
+onSurface:      #B0B0B0  // Cinza claro - Textos secundários
+onSurfaceVariant: #8A8A8A // Cinza médio - Labels e placeholders
+
+// Borders e dividers
+outline:        #2F2F2F  // Borders sutis
+outlineVariant: #1F1F1F  // Borders muito sutis
+
+// Cores de marca (inalteradas)
+primary:        #2563EB  // Azul vibrante
+primaryDark:    #1E40AF  // Azul profundo
+secondary:      #7C3AED  // Roxo
+
+// Cores de status (ajustadas para dark)
+success:        #4ECDC4  // Verde mais suave
+error:          #FF6B6B  // Vermelho mais suave
+info:           #45B7D1  // Azul mais suave
+warning:        #FFD93D  // Amarelo mais suave
+```
+
+### Uso de Cores Adaptáveis
+
+| Elemento | Light Mode | Dark Mode | Contraste |
+|----------|------------|-----------|-----------|
+| Background Principal | Branco (#FFFFFF) | Preto OLED (#0F0F0F) | - |
+| Cards/Surface | Cinza Claro (#F5F5F5) | Cinza Escuro (#1A1A1A) | - |
+| Texto Principal | Cinza Escuro (#1A1A1A) | Branco Suave (#E8E8E8) | 15.8:1 |
+| Texto Secundário | Cinza Médio (#6B6B6B) | Cinza Claro (#B0B0B0) | 9.2:1 |
+| Botão Primário | Azul (#2563EB) | Azul (#2563EB) | Texto Branco |
+| Card Hero | Gradiente Azul→Roxo | Gradiente Azul→Roxo | Texto Branco |
+| Borders | Cinza Claro (#E0E0E0) | Cinza Escuro (#2F2F2F) | - |
+| Ícones Ativos | Azul Escuro (#1E40AF) | Azul Escuro (#1E40AF) | WCAG AAA |
 
 ---
 
@@ -91,14 +124,14 @@ fontWeight: SemiBold (600)
 
 ## 🔘 Botões
 
-### Botão Primário (Amarelo)
+### Botão Primário (Azul)
 
 ```dart
 ElevatedButton(
   style: ElevatedButton.styleFrom(
-    backgroundColor: colors.primary,      // #FFE70F
-    foregroundColor: Colors.white,        // Texto BRANCO
-    elevation: 0,                         // Sem sombra
+    backgroundColor: colors.primary,      // #2563EB
+    foregroundColor: colors.white,        // Texto BRANCO (SEMPRE)
+    elevation: 0,                         // Sem sombra (flat design)
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
     ),
@@ -155,7 +188,14 @@ Container(
 Container(
   padding: EdgeInsets.all(24),
   decoration: BoxDecoration(
-    color: colors.primary,
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        colors.primary,    // #2563EB
+        colors.secondary,  // #7C3AED
+      ],
+    ),
     borderRadius: BorderRadius.circular(24),
     boxShadow: [
       BoxShadow(
@@ -165,7 +205,7 @@ Container(
       ),
     ],
   ),
-  child: /* conteúdo */,
+  child: /* conteúdo com texto BRANCO */,
 )
 ```
 
@@ -249,18 +289,18 @@ TextField(
 
 ### Estilos
 ```dart
-// Regular (outline)
+// Regular (outline) - Inativo
 PhosphorIcon(
   PhosphorIcons.house(),
   size: 24,
   color: colors.mediumGray,
 )
 
-// Fill (preenchido)
+// Fill (preenchido) - Ativo
 PhosphorIcon(
   PhosphorIcons.house(PhosphorIconsStyle.fill),
   size: 24,
-  color: colors.primary,
+  color: colors.primaryDark,  // Azul escuro para melhor contraste
 )
 
 // Bold
@@ -446,20 +486,60 @@ Center(
 
 ---
 
+## 🌙 Sistema de Temas
+
+### Como Usar Cores Adaptáveis
+
+```dart
+import '../../../utils/theme_helper.dart';
+
+Widget build(BuildContext context) {
+  final colors = context.colors; // Extension method
+  
+  return Container(
+    color: colors.surface,        // Adapta automaticamente
+    child: Text(
+      'Texto',
+      style: TextStyle(
+        color: colors.onSurface,   // Contraste perfeito
+      ),
+    ),
+  );
+}
+```
+
+### Toggle de Tema
+
+```dart
+import '../../widgets/common/theme_toggle.dart';
+
+// Switch simples
+ThemeToggle(style: ThemeToggleStyle.switch_)
+
+// Botão com dropdown
+ThemeToggle(style: ThemeToggleStyle.button)
+
+// Lista de opções
+ThemeToggle(style: ThemeToggleStyle.list)
+```
+
+---
+
 ## ✅ Checklist de UI
 
 Ao criar novos componentes, verifique:
 
-- [ ] Cores seguem a paleta definida
-- [ ] Tipografia está consistente
-- [ ] Espaçamentos são múltiplos de 4px
-- [ ] Border radius é 16px (padrão)
-- [ ] Botões primários têm texto branco
-- [ ] Ícones são do Phosphor Icons
-- [ ] Animações são suaves (300ms)
-- [ ] Estados de loading/error/empty
-- [ ] Responsivo (mobile/tablet)
-- [ ] Contraste adequado (WCAG AA)
+- [ ] **Cores adaptáveis:** Usar `context.colors` ao invés de cores fixas
+- [ ] **Contraste WCAG AAA:** Testar em ambos os modos
+- [ ] **Tipografia:** Consistente em light e dark
+- [ ] **Espaçamentos:** Múltiplos de 4px
+- [ ] **Border radius:** 16px (padrão)
+- [ ] **Botões primários:** Fundo azul + texto BRANCO
+- [ ] **Ícones:** Phosphor Icons com cores adaptáveis
+- [ ] **Animações:** Suaves (300ms)
+- [ ] **Estados:** Loading/error/empty em ambos os temas
+- [ ] **Responsivo:** Mobile/tablet
+- [ ] **Dark Mode:** Testar funcionalidade completa
 
 ---
 
@@ -467,9 +547,12 @@ Ao criar novos componentes, verifique:
 
 - [Guia Completo de UI](.kiro/steering/ui-guidelines.md)
 - [Guia de Animações](.kiro/steering/animations-icons-guidelines.md)
+- [Dark Mode - Guia de Migração](DARK_MODE_MIGRATION.md)
+- [Dark Mode - Demo e Testes](DARK_MODE_DEMO.md)
 - [Phosphor Icons](https://phosphoricons.com/)
 - [Material Design 3](https://m3.material.io/)
+- [WCAG AAA Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/)
 
 ---
 
-**Design consistente = Experiência de qualidade**
+**Design consistente + Dark Mode = Experiência premium** 🌙✨

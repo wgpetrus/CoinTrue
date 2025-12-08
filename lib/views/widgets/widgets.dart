@@ -8,6 +8,7 @@ library;
 export 'common/social_login_button.dart';
 export 'common/loading_overlay.dart';
 export 'common/error_message.dart';
+export 'common/theme_toggle.dart';
 
 // Auth widgets (específicos de autenticação)
 export 'auth/biometric_prompt.dart';

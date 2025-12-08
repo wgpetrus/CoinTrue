@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Tela de Bloqueio Biométrico
 /// 
@@ -68,13 +69,13 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return WillPopScope(
       // Impede voltar sem autenticar
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -314,7 +315,7 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (context) => AlertDialog(
-                              backgroundColor: colors.white,
+                              backgroundColor: colors.surfaceElevated,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
                               ),

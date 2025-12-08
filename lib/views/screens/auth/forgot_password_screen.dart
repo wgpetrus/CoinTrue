@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../widgets/widgets.dart';
 
 /// Tela de Recuperação de Senha
@@ -43,10 +44,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: PhosphorIcon(

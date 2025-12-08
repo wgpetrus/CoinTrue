@@ -10,3 +10,6 @@ export 'notification/notification_controller.dart';
 
 // Favorites controllers
 export 'favorites/favorites_controller.dart';
+
+// Theme controllers
+export 'theme/theme_controller.dart';

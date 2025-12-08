@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
@@ -47,8 +48,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
   Future<void> _loadMarkets() async {
     final cryptoController = context.read<CryptoController>();
     // Sempre carregar 100 criptomoedas para a tela de mercados
-    // Força o carregamento mesmo se já tiver dados
-    await cryptoController.loadCryptos(limit: 100, resetTimer: false);
+    await cryptoController.loadMarketsCryptos(resetTimer: false);
   }
 
   void _performSearch(String query) {
@@ -62,7 +62,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
         final cryptoController = context.read<CryptoController>();
         final queryLower = query.toLowerCase();
         
-        _searchResults = cryptoController.cryptos.where((crypto) {
+        _searchResults = cryptoController.marketsCryptos.where((crypto) {
           return crypto.name.toLowerCase().contains(queryLower) ||
                  crypto.symbol.toLowerCase().contains(queryLower);
         }).toList();
@@ -87,17 +87,17 @@ class _MarketsScreenState extends State<MarketsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final cryptoController = context.watch<CryptoController>();
     
-    // Usa resultados da busca se estiver buscando, senão usa a lista normal
-    final cryptosToShow = _searchQuery.isNotEmpty ? _searchResults : cryptoController.cryptos;
+    // Usa resultados da busca se estiver buscando, senão usa a lista de mercados
+    final cryptosToShow = _searchQuery.isNotEmpty ? _searchResults : cryptoController.marketsCryptos;
     final filteredCryptos = _getFilteredCryptos(cryptosToShow);
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: _isSelectionMode
             ? IconButton(
@@ -115,7 +115,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
         ),
         actions: [
@@ -134,7 +134,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
               icon: PhosphorIcon(
                 PhosphorIcons.star(),
                 size: 24,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
               onPressed: () {
                 Navigator.push(
@@ -320,7 +320,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
     required List<Crypto> filteredCryptos,
     required AppColors colors,
   }) {
-    if (cryptoController.isLoading && cryptoController.cryptos.isEmpty) {
+    if (cryptoController.isLoading && cryptoController.marketsCryptos.isEmpty) {
       return Center(
         child: Container(
           margin: const EdgeInsets.all(32),
@@ -371,7 +371,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
               Text(
                 'Carregando mercados...',
                 style: TextStyle(
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -572,7 +572,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Faça login para adicionar favoritos'),
-          backgroundColor: AppConstants.colors.error,
+          backgroundColor: context.colors.error,
         ),
       );
       return;
@@ -588,7 +588,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${_selectedSymbols.length} favorito(s) adicionado(s)'),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
           ),
         );
       }
@@ -599,7 +599,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Erro ao adicionar favoritos'),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
           ),
         );
       }

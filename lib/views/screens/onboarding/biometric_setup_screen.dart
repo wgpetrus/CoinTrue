@@ -5,6 +5,7 @@ import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
 import '../../../utils/platform_helper.dart';
+import '../../../utils/theme_helper.dart';
 import '../../widgets/widgets.dart';
 
 /// Tela de Configuração de Biometria
@@ -35,7 +36,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
               content: const Text(
                 'Seu dispositivo não suporta biometria. Você pode continuar sem ela.',
               ),
-              backgroundColor: AppConstants.colors.mediumGray,
+              backgroundColor: context.colors.onSurface,
               duration: const Duration(seconds: 4),
             ),
           );
@@ -44,7 +45,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
         }
       });
       return Scaffold(
-        backgroundColor: AppConstants.colors.white,
+        backgroundColor: context.colors.background,
         body: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -52,7 +53,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppConstants.colors.white,
+      backgroundColor: context.colors.background,
       body: Consumer<AuthController>(
         builder: (context, authController, child) {
           return LoadingOverlay(
@@ -69,7 +70,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
 
   /// Constrói a tela de sucesso após ativar biometria
   Widget _buildSuccessBody(BuildContext context, AuthController authController) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return SafeArea(
       child: Padding(
@@ -139,7 +140,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
                 onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.primary,
-                  foregroundColor: colors.white,
+                  foregroundColor: colors.onPrimary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -165,7 +166,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
 
   /// Constrói o corpo da tela
   Widget _buildBody(BuildContext context, AuthController authController) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return SafeArea(
       child: LayoutBuilder(
@@ -374,7 +375,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
 
   /// Constrói o botão "Ativar Biometria"
   Widget _buildEnableButton(AuthController authController) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return SizedBox(
       width: double.infinity,
@@ -385,8 +386,8 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
             : () => _handleEnableBiometric(authController),
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
-          disabledBackgroundColor: colors.darkGray.withValues(alpha: 0.3),
-          foregroundColor: colors.white,
+          disabledBackgroundColor: colors.onBackground.withValues(alpha: 0.3),
+          foregroundColor: colors.onPrimary,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -398,7 +399,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.onPrimary),
                 ),
               )
             : Text(
@@ -406,7 +407,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: colors.white,
+                  color: colors.onPrimary,
                 ),
               ),
       ),

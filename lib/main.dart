@@ -15,6 +15,7 @@ import 'repositories/repositories.dart';
 import 'repositories/crypto/crypto_repositories.dart';
 import 'views/screens/screens.dart';
 import 'utils/constants.dart';
+import 'utils/theme.dart';
 import 'utils/https_validator.dart';
 import 'utils/error_handler.dart';
 import 'models/models.dart';
@@ -212,21 +213,32 @@ class MyApp extends StatelessWidget {
             context.read<FavoritesRepository>(),
           ),
         ),
+        
+        // Theme Controller
+        ChangeNotifierProvider<ThemeController>(
+          create: (_) => ThemeController(),
+        ),
       ],
-      child: MaterialApp(
-        title: 'CoinTrue',
-        debugShowCheckedModeBanner: false,
-        theme: _buildTheme(),
-        initialRoute: '/',
-        routes: _buildRoutes(),
-        builder: (context, child) {
-          // Wrapper para desfoque automático de inputs ao clicar fora
-          return GestureDetector(
-            onTap: () {
-              // Remove o foco de qualquer campo de texto ao clicar fora
-              FocusManager.instance.primaryFocus?.unfocus();
+      child: Consumer<ThemeController>(
+        builder: (context, themeController, child) {
+          return MaterialApp(
+            title: 'CoinTrue',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeController.themeMode,
+            initialRoute: '/',
+            routes: _buildRoutes(),
+            builder: (context, child) {
+              // Wrapper para desfoque automático de inputs ao clicar fora
+              return GestureDetector(
+                onTap: () {
+                  // Remove o foco de qualquer campo de texto ao clicar fora
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                child: child,
+              );
             },
-            child: child,
           );
         },
       ),
@@ -246,7 +258,7 @@ class MyApp extends StatelessWidget {
 
   /// Constrói o tema global da aplicação
   ThemeData _buildTheme() {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Tema base sempre light
 
     return ThemeData(
       // Cores primárias
@@ -437,7 +449,7 @@ class _PlaceholderScreen extends StatelessWidget {
             Icon(
               Icons.construction,
               size: 64,
-              color: AppConstants.colors.darkGray.withValues(alpha: 0.5),
+              color: Colors.grey.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -448,7 +460,7 @@ class _PlaceholderScreen extends StatelessWidget {
             Text(
               'Em desenvolvimento',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppConstants.colors.darkGray.withValues(alpha: 0.7),
+                color: Colors.grey.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 24),

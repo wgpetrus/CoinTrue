@@ -8,6 +8,7 @@ import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
 import '../../../utils/error_handler.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../services/services.dart';
 import '../../../models/models.dart';
 import '../auth/login_screen.dart';
@@ -390,10 +391,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       body: Center(
         child: _buildLogo(colors),
       ),
@@ -529,12 +530,12 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     icon: PhosphorIcon(
                       PhosphorIcons.arrowClockwise(),
                       size: 18,
-                      color: colors.white,
+                      color: colors.onPrimary,
                     ),
                     label: const Text('Retry'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colors.primary,
-                      foregroundColor: colors.white,
+                      foregroundColor: colors.onPrimary,
                     ),
                   ),
                 ),
@@ -588,7 +589,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: AppConstants.colors.error,
+        backgroundColor: context.colors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

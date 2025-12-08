@@ -6,6 +6,7 @@ import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../widgets/crypto/crypto_icon.dart';
 
 /// Tela de Transação (Compra/Venda)
@@ -95,20 +96,51 @@ class _TransactionScreenState extends State<TransactionScreen> {
     _loadAvailableQuantity();
   }
   
-  void _setMaxAmount() {
+  void _setPercentAmount(double percent) {
     final walletController = context.read<WalletController>();
     
     if (_selectedType == TransactionType.buy) {
-      // Usar todo o saldo disponível
-      _amountController.text = walletController.balance.toStringAsFixed(2);
+      // Usar porcentagem do saldo disponível
+      final amount = walletController.balance * percent;
+      _amountController.text = amount.toStringAsFixed(2);
     } else {
-      // Vender tudo que possui - usa a quantidade exata disponível
+      // Vender porcentagem do que possui
       if (_availableQuantity != null && _availableQuantity! > 0) {
-        // Calcula o total exato sem arredondamentos
-        final total = _availableQuantity! * widget.crypto.currentPrice;
+        final quantityToSell = _availableQuantity! * percent;
+        final total = quantityToSell * widget.crypto.currentPrice;
         _amountController.text = total.toStringAsFixed(2);
       }
     }
+    
+    HapticFeedback.lightImpact();
+  }
+  
+  /// Constrói botão de porcentagem
+  Widget _buildPercentButton(AppColors colors, String label, double percent) {
+    return GestureDetector(
+      onTap: () => _setPercentAmount(percent),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: colors.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: colors.primaryDark,
+            ),
+          ),
+        ),
+      ),
+    );
   }
   
   Future<void> _showConfirmation() async {
@@ -118,7 +150,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Insira um valor válido'),
-          backgroundColor: AppConstants.colors.error,
+          backgroundColor: context.colors.error,
         ),
       );
       return;
@@ -220,7 +252,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 ),
               ],
             ),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -246,7 +278,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 ),
               ],
             ),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -256,18 +288,18 @@ class _TransactionScreenState extends State<TransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final walletController = context.watch<WalletController>();
     
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
           icon: PhosphorIcon(
             PhosphorIcons.caretLeft(PhosphorIconsStyle.bold),
-            color: colors.darkGray,
+            color: colors.onBackground,
             size: 24,
           ),
           onPressed: () => Navigator.pop(context),
@@ -275,7 +307,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
         title: Text(
           _selectedType == TransactionType.buy ? 'Comprar' : 'Vender',
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -360,7 +392,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 Text(
                   widget.crypto.name,
                   style: TextStyle(
-                    color: colors.darkGray,
+                    color: colors.onBackground,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -383,7 +415,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               Text(
                 'R\$ ${widget.crypto.currentPrice.toStringAsFixed(2)}',
                 style: TextStyle(
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -440,9 +472,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? colors.primary : colors.white,
+          color: isSelected ? colors.primary : colors.surfaceElevated,
           border: Border.all(
-            color: isSelected ? colors.primary : colors.lightGray,
+            color: isSelected ? colors.primary : colors.outline,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -452,14 +484,14 @@ class _TransactionScreenState extends State<TransactionScreen> {
           children: [
             PhosphorIcon(
               icon,
-              color: isSelected ? colors.white : colors.mediumGray,
+              color: isSelected ? colors.onPrimary : colors.onSurface,
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? colors.white : colors.mediumGray,
+                color: isSelected ? colors.onPrimary : colors.onSurface,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -507,7 +539,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             Text(
               'R\$ ${walletController.balance.toStringAsFixed(2)}',
               style: TextStyle(
-                color: colors.darkGray,
+                color: colors.onBackground,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -553,7 +585,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                   ? '${_availableQuantity!.toStringAsFixed(8)} ${widget.crypto.symbol}'
                   : 'Carregando...',
               style: TextStyle(
-                color: colors.darkGray,
+                color: colors.onBackground,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -568,33 +600,26 @@ class _TransactionScreenState extends State<TransactionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Text(
+          'Quanto deseja ${_selectedType == TransactionType.buy ? 'investir' : 'vender'}?',
+          style: TextStyle(
+            color: colors.onBackground,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        
+        // Botões de porcentagem
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Quanto deseja ${_selectedType == TransactionType.buy ? 'investir' : 'vender'}?',
-              style: TextStyle(
-                color: colors.darkGray,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextButton(
-              onPressed: _setMaxAmount,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                'TUDO',
-                style: TextStyle(
-                  color: colors.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            Expanded(child: _buildPercentButton(colors, '25%', 0.25)),
+            const SizedBox(width: 8),
+            Expanded(child: _buildPercentButton(colors, '50%', 0.50)),
+            const SizedBox(width: 8),
+            Expanded(child: _buildPercentButton(colors, '75%', 0.75)),
+            const SizedBox(width: 8),
+            Expanded(child: _buildPercentButton(colors, '100%', 1.0)),
           ],
         ),
         const SizedBox(height: 12),
@@ -605,18 +630,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: 32,
             fontWeight: FontWeight.bold,
           ),
           decoration: InputDecoration(
-            prefix: Text(
-              'R\$ ',
-              style: TextStyle(
-                color: colors.darkGray,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
+            prefixText: 'R\$ ',
+            prefixStyle: TextStyle(
+              color: colors.onBackground,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
             ),
             hintText: '0,00',
             hintStyle: TextStyle(
@@ -677,8 +700,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            colors.darkGray,
-            colors.darkGray.withOpacity(0.8),
+            colors.primary,
+            colors.secondary,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -686,7 +709,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: colors.darkGray.withOpacity(0.3),
+            color: colors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -700,20 +723,22 @@ class _TransactionScreenState extends State<TransactionScreen> {
               Text(
                 'Você vai ${_selectedType == TransactionType.buy ? 'receber' : 'vender'}',
                 style: TextStyle(
-                  color: colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withValues(alpha: 0.9), // Sempre branco no gradiente
                   fontSize: 14,
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (_selectedType == TransactionType.buy ? colors.success : colors.error)
-                      .withValues(alpha: 0.2),
+                  color: colors.surfaceElevated,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _selectedType == TransactionType.buy ? colors.success : colors.error,
-                    width: 1,
-                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Text(
                   _selectedType == TransactionType.buy ? 'COMPRA' : 'VENDA',
@@ -721,6 +746,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                     color: _selectedType == TransactionType.buy ? colors.success : colors.error,
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -730,7 +756,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
           Text(
             '${_calculatedQuantity.toStringAsFixed(8)} ${widget.crypto.symbol}',
             style: TextStyle(
-              color: colors.white,
+              color: Colors.white, // Sempre branco no gradiente
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
@@ -745,14 +771,14 @@ class _TransactionScreenState extends State<TransactionScreen> {
               Text(
                 'Preço unitário',
                 style: TextStyle(
-                  color: colors.white.withValues(alpha: 0.8),
+                  color: Colors.white.withValues(alpha: 0.8), // Sempre branco no gradiente
                   fontSize: 14,
                 ),
               ),
               Text(
                 'R\$ ${widget.crypto.currentPrice.toStringAsFixed(2)}',
                 style: TextStyle(
-                  color: colors.white,
+                  color: Colors.white, // Sempre branco no gradiente
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -766,14 +792,14 @@ class _TransactionScreenState extends State<TransactionScreen> {
               Text(
                 'Taxa',
                 style: TextStyle(
-                  color: colors.white.withValues(alpha: 0.8),
+                  color: Colors.white.withValues(alpha: 0.8), // Sempre branco no gradiente
                   fontSize: 14,
                 ),
               ),
               Text(
                 'R\$ 0,00',
                 style: TextStyle(
-                  color: colors.white,
+                  color: Colors.white, // Sempre branco no gradiente
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -790,7 +816,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       onPressed: _showConfirmation,
       style: ElevatedButton.styleFrom(
         backgroundColor: colors.primary,
-        foregroundColor: colors.white,
+        foregroundColor: colors.onPrimary,
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -804,7 +830,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             _selectedType == TransactionType.buy
                 ? PhosphorIcons.shoppingCart(PhosphorIconsStyle.bold)
                 : PhosphorIcons.arrowCircleUp(PhosphorIconsStyle.bold),
-            color: colors.white,
+            color: colors.onPrimary,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -825,7 +851,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
 class _LoadingDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -833,7 +859,7 @@ class _LoadingDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: colors.white,
+          color: colors.surfaceElevated,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -847,7 +873,7 @@ class _LoadingDialog extends StatelessWidget {
             Text(
               'Processando transação...',
               style: TextStyle(
-                color: colors.darkGray,
+                color: colors.onBackground,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -885,7 +911,7 @@ class _ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return AlertDialog(
       shape: RoundedRectangleBorder(
@@ -903,7 +929,7 @@ class _ConfirmationDialog extends StatelessWidget {
             child: Text(
               'Confirmar ${type == TransactionType.buy ? 'Compra' : 'Venda'}',
               style: TextStyle(
-                color: colors.darkGray,
+                color: colors.onBackground,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -947,7 +973,7 @@ class _ConfirmationDialog extends StatelessWidget {
           onPressed: () => Navigator.pop(context, true),
           style: ElevatedButton.styleFrom(
             backgroundColor: type == TransactionType.buy ? colors.success : colors.error,
-            foregroundColor: colors.white,
+            foregroundColor: Colors.white, // Sempre branco em botões coloridos
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -980,7 +1006,7 @@ class _ConfirmationDialog extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: isTotal ? 16 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
           ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
@@ -27,7 +28,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final cryptoController = context.watch<CryptoController>();
     final favoritesController = context.watch<FavoritesController>();
     
@@ -37,9 +38,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         title: Text(
           _isSelectionMode 
@@ -48,7 +49,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
         ),
         leading: _isSelectionMode
@@ -56,7 +57,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 icon: PhosphorIcon(
                   PhosphorIcons.x(),
                   size: 24,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
                 onPressed: _exitSelectionMode,
               )
@@ -64,7 +65,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 icon: PhosphorIcon(
                   PhosphorIcons.arrowLeft(),
                   size: 24,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
                 onPressed: () => Navigator.pop(context),
               ),
@@ -213,7 +214,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
             ).animate()
               .fadeIn(delay: 400.ms, duration: 400.ms)
@@ -319,7 +320,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${_selectedSymbols.length} favorito(s) removido(s)'),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
           ),
         );
       }
@@ -330,7 +331,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Erro ao remover favoritos'),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
           ),
         );
       }

@@ -81,7 +81,7 @@ class AssetLoader {
 
   /// Builds default fallback widget for any asset
   static Widget buildDefaultFallback(double? width, double? height) {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Fallback sempre com cores fixas
     return Container(
       width: width,
       height: height,
@@ -101,7 +101,7 @@ class AssetLoader {
 
   /// Builds app logo fallback
   static Widget buildAppLogoFallback(double? width, double? height) {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Fallback sempre com cores fixas
     return Container(
       width: width,
       height: height,
@@ -121,7 +121,7 @@ class AssetLoader {
 
   /// Builds social logo fallback
   static Widget buildSocialLogoFallback(String providerName, double? width, double? height) {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Fallback sempre com cores fixas
     final isGoogle = providerName.toLowerCase().contains('google');
     
     return Container(
@@ -148,7 +148,7 @@ class AssetLoader {
 
   /// Builds biometric logo fallback
   static Widget buildBiometricLogoFallback(double? width, double? height) {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Fallback sempre com cores fixas
     return Container(
       width: width,
       height: height,

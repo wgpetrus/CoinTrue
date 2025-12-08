@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Ícone de Criptomoeda com Cache
 /// 
@@ -22,7 +23,7 @@ class CachedCryptoIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     // Se não tem URL, mostra fallback direto
     if (imageUrl == null || imageUrl!.isEmpty) {
@@ -50,7 +51,7 @@ class CachedCryptoIcon extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: colors.lightGray,
+        color: colors.surface,
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -59,7 +60,7 @@ class CachedCryptoIcon extends StatelessWidget {
           height: size * 0.5,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(colors.mediumGray),
+            valueColor: AlwaysStoppedAnimation<Color>(colors.onSurface),
           ),
         ),
       ),
@@ -83,7 +84,7 @@ class CachedCryptoIcon extends StatelessWidget {
           style: TextStyle(
             fontSize: size * 0.4,
             fontWeight: FontWeight.bold,
-            color: colors.white,
+            color: Colors.white, // Sempre branco em ícones de crypto
           ),
         ),
       ),
@@ -91,7 +92,7 @@ class CachedCryptoIcon extends StatelessWidget {
   }
 
   Color _getCryptoColor(String symbol) {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Cores de crypto sempre as mesmas
     
     switch (symbol.toUpperCase()) {
       case 'BTC':

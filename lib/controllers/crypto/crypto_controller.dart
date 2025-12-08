@@ -9,14 +9,15 @@ import '../../repositories/crypto/crypto_repositories.dart';
 /// - Carregar lista de criptomoedas via Repository
 /// - Atualizar preços automaticamente
 /// - Gerenciar estado de loading e erros
-/// - Cache de dados
+/// - Cache de dados separados para Home e Mercados
 /// 
 /// Segue SOLID: Depende de CryptoRepository (interface), não de implementação.
 class CryptoController extends ChangeNotifier {
   final CryptoRepository _repository;
   
-  // Estado
-  List<Crypto> _cryptos = [];
+  // Estado - Listas separadas para Home e Mercados
+  List<Crypto> _homeCryptos = [];      // Top 10 para Home
+  List<Crypto> _marketsCryptos = [];   // Top 100 para Mercados
   bool _isLoading = false;
   String? _error;
   DateTime? _lastUpdate;
@@ -30,51 +31,87 @@ class CryptoController extends ChangeNotifier {
   CryptoController(this._repository);
 
   // Getters
-  List<Crypto> get cryptos => _cryptos;
+  List<Crypto> get cryptos => _homeCryptos;        // Padrão retorna lista da Home
+  List<Crypto> get homeCryptos => _homeCryptos;    // Top 10 para Home
+  List<Crypto> get marketsCryptos => _marketsCryptos; // Top 100 para Mercados
   bool get isLoading => _isLoading;
   String? get error => _error;
   DateTime? get lastUpdate => _lastUpdate;
   
-  /// Carrega lista de criptomoedas
-  Future<void> loadCryptos({int limit = 100, bool resetTimer = true}) async {
-    // Se já tem dados suficientes E não é um refresh explícito, usa cache
-    // MAS: se o limite solicitado é MAIOR que o atual, sempre recarrega
-    if (_cryptos.isNotEmpty && 
-        _cryptos.length >= limit && 
-        !resetTimer && 
-        _error == null) {
-      debugPrint('CryptoController: Using cached data (${_cryptos.length} cryptos)');
+  /// Carrega lista de criptomoedas para Home (Top 10)
+  Future<void> loadHomeCryptos({bool resetTimer = true}) async {
+    final needsReload = _homeCryptos.isEmpty || resetTimer || _error != null;
+    
+    if (!needsReload) {
+      debugPrint('CryptoController: Using cached HOME data (${_homeCryptos.length} cryptos)');
       return;
     }
     
-    // Se tem menos moedas que o solicitado, sempre carrega mais
-    if (_cryptos.isNotEmpty && _cryptos.length < limit) {
-      debugPrint('CryptoController: Need more cryptos (have ${_cryptos.length}, need $limit)');
-    }
+    debugPrint('CryptoController: Loading HOME cryptos (top 10)...');
     
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      debugPrint('CryptoController: Loading $limit cryptos...');
-      _cryptos = await _repository.getCryptos(limit: limit);
+      _homeCryptos = await _repository.getCryptos(limit: 10);
       
-      // Só reseta o timer se for um refresh real (não navegação entre telas)
       if (resetTimer) {
         _lastUpdate = DateTime.now();
-        debugPrint('CryptoController: Timer reset');
+        debugPrint('CryptoController: HOME timer reset');
       }
       
       _error = null;
-      
-      debugPrint('CryptoController: Loaded ${_cryptos.length} cryptos');
+      debugPrint('CryptoController: Successfully loaded ${_homeCryptos.length} HOME cryptos');
     } catch (e) {
       _error = 'Erro ao carregar criptomoedas: $e';
-      debugPrint('CryptoController: Error loading cryptos: $e');
+      debugPrint('CryptoController: Error loading HOME cryptos: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Carrega lista de criptomoedas para Mercados (Top 100)
+  Future<void> loadMarketsCryptos({bool resetTimer = true}) async {
+    final needsReload = _marketsCryptos.isEmpty || resetTimer || _error != null;
+    
+    if (!needsReload) {
+      debugPrint('CryptoController: Using cached MARKETS data (${_marketsCryptos.length} cryptos)');
+      return;
+    }
+    
+    debugPrint('CryptoController: Loading MARKETS cryptos (top 100)...');
+    
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _marketsCryptos = await _repository.getCryptos(limit: 100);
+      
+      if (resetTimer) {
+        _lastUpdate = DateTime.now();
+        debugPrint('CryptoController: MARKETS timer reset');
+      }
+      
+      _error = null;
+      debugPrint('CryptoController: Successfully loaded ${_marketsCryptos.length} MARKETS cryptos');
+    } catch (e) {
+      _error = 'Erro ao carregar criptomoedas: $e';
+      debugPrint('CryptoController: Error loading MARKETS cryptos: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Carrega lista de criptomoedas (método legado - mantido para compatibilidade)
+  Future<void> loadCryptos({int limit = 10, bool resetTimer = true}) async {
+    if (limit <= 10) {
+      await loadHomeCryptos(resetTimer: resetTimer);
+    } else {
+      await loadMarketsCryptos(resetTimer: resetTimer);
     }
   }
 
@@ -86,9 +123,11 @@ class CryptoController extends ChangeNotifier {
       // Limpa cache para forçar nova requisição
       _repository.clearCache();
       
-      // Recarrega tudo do zero
-      final limit = _cryptos.length > 0 ? _cryptos.length : 100;
-      await loadCryptos(limit: limit);
+      // Recarrega ambas as listas
+      await Future.wait([
+        loadHomeCryptos(resetTimer: true),
+        loadMarketsCryptos(resetTimer: true),
+      ]);
       
       debugPrint('CryptoController: Prices refreshed (MANUAL)');
     } catch (e) {
@@ -120,9 +159,15 @@ class CryptoController extends ChangeNotifier {
   /// Busca uma cripto específica por ID
   Crypto? getCryptoById(String id) {
     try {
-      return _cryptos.firstWhere((c) => c.id == id);
+      // Busca primeiro na lista de mercados (mais completa)
+      return _marketsCryptos.firstWhere((c) => c.id == id);
     } catch (e) {
-      return null;
+      try {
+        // Se não encontrar, busca na lista da home
+        return _homeCryptos.firstWhere((c) => c.id == id);
+      } catch (e) {
+        return null;
+      }
     }
   }
 
@@ -141,9 +186,19 @@ class CryptoController extends ChangeNotifier {
     } catch (e) {
       debugPrint('CryptoController: Error searching: $e');
       
-      // Fallback: busca local na lista carregada
+      // Fallback: busca local nas listas carregadas
       final lowerQuery = query.toLowerCase();
-      final localResults = _cryptos.where((crypto) {
+      
+      // Combina ambas as listas e remove duplicatas
+      final allCryptos = <String, Crypto>{};
+      for (final crypto in _marketsCryptos) {
+        allCryptos[crypto.id] = crypto;
+      }
+      for (final crypto in _homeCryptos) {
+        allCryptos[crypto.id] = crypto;
+      }
+      
+      final localResults = allCryptos.values.where((crypto) {
         return crypto.name.toLowerCase().contains(lowerQuery) ||
             crypto.symbol.toLowerCase().contains(lowerQuery);
       }).toList();

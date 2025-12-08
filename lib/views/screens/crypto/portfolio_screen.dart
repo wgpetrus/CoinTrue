@@ -7,6 +7,7 @@ import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../widgets/crypto/crypto_icon.dart';
 import 'crypto_detail_screen.dart';
 import 'home_screen.dart';
@@ -49,22 +50,22 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final portfolioController = context.watch<PortfolioController>();
     final walletController = context.watch<WalletController>();
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
           'Portfólio',
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: false,
         actions: [
@@ -72,7 +73,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           PopupMenuButton<PortfolioSortType>(
             icon: PhosphorIcon(
               PhosphorIcons.funnelSimple(),
-              color: colors.darkGray,
+              color: colors.onBackground,
               size: 24,
             ),
             onSelected: (type) {
@@ -170,7 +171,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                 Text(
                                   'Meus Ativos',
                                   style: TextStyle(
-                                    color: colors.darkGray,
+                                    color: colors.onBackground,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -276,7 +277,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             Text(
               'Carregando portfólio...',
               style: TextStyle(
-                color: colors.darkGray,
+                color: colors.onBackground,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -313,7 +314,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
             ),
             const SizedBox(height: 8),
@@ -377,7 +378,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
             ).animate()
               .fadeIn(delay: 400.ms, duration: 400.ms)
@@ -482,7 +483,7 @@ class _PortfolioValueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final grandTotal = totalValue + balance;
 
     return Container(
@@ -514,14 +515,14 @@ class _PortfolioValueCard extends StatelessWidget {
               Text(
                 'Valor Total',
                 style: TextStyle(
-                  color: colors.white,
+                  color: Colors.white, // Sempre branco no gradiente
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               PhosphorIcon(
                 PhosphorIcons.briefcase(PhosphorIconsStyle.fill),
-                color: colors.white,
+                color: Colors.white, // Sempre branco no gradiente
                 size: 24,
               ),
             ],
@@ -530,7 +531,7 @@ class _PortfolioValueCard extends StatelessWidget {
           Text(
             'R\$ ${grandTotal.toStringAsFixed(2)}',
             style: TextStyle(
-              color: colors.white,
+              color: Colors.white, // Sempre branco no gradiente
               fontSize: 36,
               fontWeight: FontWeight.bold,
             ),
@@ -542,14 +543,14 @@ class _PortfolioValueCard extends StatelessWidget {
                 profitLoss >= 0
                     ? PhosphorIcons.caretUp(PhosphorIconsStyle.fill)
                     : PhosphorIcons.caretDown(PhosphorIconsStyle.fill),
-                color: colors.white,
+                color: Colors.white, // Sempre branco no gradiente
                 size: 16,
               ),
               const SizedBox(width: 4),
               Text(
                 _formatProfitLoss(profitLoss, profitLossPercent),
                 style: TextStyle(
-                  color: colors.white,
+                  color: Colors.white, // Sempre branco no gradiente
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -568,7 +569,7 @@ class _PortfolioValueCard extends StatelessWidget {
                   Text(
                     'Em Criptos',
                     style: TextStyle(
-                      color: colors.white.withValues(alpha: 0.9),
+                      color: Colors.white.withValues(alpha: 0.9), // Sempre branco no gradiente
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -577,7 +578,7 @@ class _PortfolioValueCard extends StatelessWidget {
                   Text(
                     'R\$ ${totalValue.toStringAsFixed(2)}',
                     style: TextStyle(
-                      color: colors.white,
+                      color: Colors.white, // Sempre branco no gradiente
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -590,7 +591,7 @@ class _PortfolioValueCard extends StatelessWidget {
                   Text(
                     'Saldo Disponível',
                     style: TextStyle(
-                      color: colors.white.withValues(alpha: 0.9),
+                      color: Colors.white.withValues(alpha: 0.9), // Sempre branco no gradiente
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -599,7 +600,7 @@ class _PortfolioValueCard extends StatelessWidget {
                   Text(
                     'R\$ ${balance.toStringAsFixed(2)}',
                     style: TextStyle(
-                      color: colors.white,
+                      color: Colors.white, // Sempre branco no gradiente
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -640,7 +641,7 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -674,7 +675,7 @@ class _StatCard extends StatelessWidget {
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: colors.mediumGray,
+                    color: colors.onSurface,
                     fontSize: 12,
                   ),
                 ),
@@ -685,7 +686,7 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: colors.darkGray,
+              color: colors.onBackground,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -716,14 +717,14 @@ class _PortfolioAssetItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: colors.white,
+        color: colors.surfaceElevated,
         border: Border.all(
-          color: colors.veryLightGray,
+          color: colors.outline,
           width: 1,
         ),
         borderRadius: BorderRadius.circular(16),
@@ -754,7 +755,7 @@ class _PortfolioAssetItem extends StatelessWidget {
                       Text(
                         crypto.name,
                         style: TextStyle(
-                          color: colors.darkGray,
+                          color: colors.onBackground,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -778,7 +779,7 @@ class _PortfolioAssetItem extends StatelessWidget {
                     Text(
                       'R\$ ${currentValue.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: colors.darkGray,
+                        color: colors.onBackground,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -849,7 +850,7 @@ class _DistributionChartState extends State<_DistributionChart> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     if (widget.distribution.isEmpty) {
       return const SizedBox.shrink();
@@ -858,9 +859,9 @@ class _DistributionChartState extends State<_DistributionChart> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colors.white,
+        color: colors.surfaceElevated,
         border: Border.all(
-          color: colors.veryLightGray,
+          color: colors.outline,
           width: 1,
         ),
         borderRadius: BorderRadius.circular(20),
@@ -871,7 +872,7 @@ class _DistributionChartState extends State<_DistributionChart> {
           Text(
             'Distribuição do Portfólio',
             style: TextStyle(
-              color: colors.darkGray,
+              color: colors.onBackground,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -938,7 +939,7 @@ class _DistributionChartState extends State<_DistributionChart> {
                                 Text(
                                   crypto.symbol,
                                   style: TextStyle(
-                                    color: colors.darkGray,
+                                    color: colors.onBackground,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -956,7 +957,7 @@ class _DistributionChartState extends State<_DistributionChart> {
                           Text(
                             'R\$ ${item.value.toStringAsFixed(2)}',
                             style: TextStyle(
-                              color: colors.darkGray,
+                              color: colors.onBackground,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -1008,7 +1009,7 @@ class _DistributionChartState extends State<_DistributionChart> {
                 child: Text(
                   widget.portfolioController.getCrypto(item.cryptoId)?.symbol ?? '',
                   style: TextStyle(
-                    color: colors.darkGray,
+                    color: colors.onBackground,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),

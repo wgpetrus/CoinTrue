@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Widget para exibir mensagens de erro
 /// 
@@ -30,7 +31,7 @@ class ErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final strings = AppConstants.strings;
 
     return Container(
@@ -66,7 +67,7 @@ class ErrorMessage extends StatelessWidget {
                   message,
                   style: TextStyle(
                     fontSize: 14,
-                    color: colors.darkGray,
+                    color: colors.onBackground,
                     height: 1.4,
                   ),
                 ),

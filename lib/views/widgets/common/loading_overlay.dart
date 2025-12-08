@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Widget de overlay semi-transparente com spinner de loading
 /// 
@@ -41,7 +42,7 @@ class LoadingOverlay extends StatelessWidget {
 
   /// Constrói o overlay semi-transparente com spinner
   Widget _buildOverlay(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final strings = AppConstants.strings;
 
     return Positioned.fill(
@@ -54,11 +55,11 @@ class LoadingOverlay extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: colors.white,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: colors.darkGray.withValues(alpha: 0.2),
+                    color: colors.shadow,
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -79,7 +80,7 @@ class LoadingOverlay extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: colors.darkGray,
+                      color: colors.onBackground,
                     ),
                     textAlign: TextAlign.center,
                   ),

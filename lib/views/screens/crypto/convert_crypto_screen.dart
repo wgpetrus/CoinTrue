@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
@@ -39,13 +40,13 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final cryptoController = context.watch<CryptoController>();
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
           icon: PhosphorIcon(
@@ -143,44 +144,31 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
           
           const SizedBox(height: 16),
           
-          // Label do campo com botão Máx
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Quantidade a converter',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: colors.mediumGray,
-                ),
-              ),
-              if (_fromCrypto != null)
-                GestureDetector(
-                  onTap: _setMaxAmount,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: colors.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: colors.primary.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      'Máx',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: colors.primaryDark,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+          // Label do campo
+          Text(
+            'Quantidade a converter',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: colors.mediumGray,
+            ),
           ),
           const SizedBox(height: 8),
+          
+          // Botões de porcentagem
+          if (_fromCrypto != null)
+            Row(
+              children: [
+                Expanded(child: _buildPercentButton(colors, '25%', 0.25)),
+                const SizedBox(width: 8),
+                Expanded(child: _buildPercentButton(colors, '50%', 0.50)),
+                const SizedBox(width: 8),
+                Expanded(child: _buildPercentButton(colors, '75%', 0.75)),
+                const SizedBox(width: 8),
+                Expanded(child: _buildPercentButton(colors, '100%', 1.0)),
+              ],
+            ),
+          const SizedBox(height: 12),
           
           // Campo de valor com padding
           Container(
@@ -235,6 +223,44 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
               },
             ),
           ),
+          
+          // Mostrar saldo disponível
+          if (_fromCrypto != null) ...[
+            const SizedBox(height: 8),
+            Consumer<PortfolioController>(
+              builder: (context, portfolioController, child) {
+                final asset = portfolioController.assets.firstWhere(
+                  (a) => a.cryptoId == _fromCrypto!.id,
+                  orElse: () => PortfolioAsset(
+                    cryptoId: '',
+                    quantity: 0,
+                    avgPrice: 0,
+                    totalInvested: 0,
+                    updatedAt: DateTime.now(),
+                  ),
+                );
+                
+                return Row(
+                  children: [
+                    PhosphorIcon(
+                      PhosphorIcons.wallet(PhosphorIconsStyle.fill),
+                      size: 14,
+                      color: colors.mediumGray,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Disponível: ${asset.quantity.toStringAsFixed(8)} ${_fromCrypto!.symbol.toUpperCase()}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: colors.mediumGray,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
           
           const SizedBox(height: 24),
           
@@ -559,7 +585,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
     required Function(Crypto) onSelect,
     Crypto? excludeCrypto,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final portfolioController = context.read<PortfolioController>();
     
     // Filtrar apenas criptos que o usuário possui
@@ -830,8 +856,8 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
     });
   }
 
-  /// Define quantidade máxima disponível
-  void _setMaxAmount() {
+  /// Define quantidade por porcentagem
+  void _setPercentAmount(double percent) {
     if (_fromCrypto == null) return;
     
     final portfolioController = context.read<PortfolioController>();
@@ -840,19 +866,58 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
       orElse: () => throw Exception('Asset not found'),
     );
     
+    final amount = asset.quantity * percent;
+    
     setState(() {
-      _amountController.text = asset.quantity.toStringAsFixed(8);
+      _amountController.text = amount.toStringAsFixed(8);
       _calculateConversion();
     });
+    
+    HapticFeedback.lightImpact();
+  }
+  
+  /// Constrói botão de porcentagem
+  Widget _buildPercentButton(AppColors colors, String label, double percent) {
+    return GestureDetector(
+      onTap: () => _setPercentAmount(percent),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: colors.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: colors.primaryDark,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Inverte as criptomoedas
   void _swapCryptos() {
+    HapticFeedback.lightImpact();
+    
     setState(() {
       final temp = _fromCrypto;
       _fromCrypto = _toCrypto;
       _toCrypto = temp;
-      _calculateConversion();
+      
+      // Limpar todos os campos ao inverter para evitar confusão
+      _amountController.clear();
+      _convertedAmount = 0.0;
+      _conversionRate = 0.0;
+      _isCalculating = false;
     });
   }
 
@@ -860,7 +925,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
   Future<void> _handleConvert() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final authController = context.read<AuthController>();
     final transactionController = context.read<TransactionController>();
     final portfolioController = context.read<PortfolioController>();
@@ -974,7 +1039,7 @@ class _ConvertCryptoScreenState extends State<ConvertCryptoScreen> {
       case 'sol':
         return const Color(0xFFE91E63);
       default:
-        return AppConstants.colors.mediumGray;
+        return AppColors.light.primary; // Cor padrão para criptos desconhecidas
     }
   }
 }

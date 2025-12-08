@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/image_cache_manager.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Widget padronizado para ícones de criptomoedas
 /// 
@@ -54,7 +55,7 @@ class CryptoIcon extends StatelessWidget {
   }
 
   Widget _buildFallbackIcon() {
-    final colors = AppConstants.colors;
+    final colors = AppColors.light; // Cores de crypto sempre as mesmas
     
     return Container(
       width: size,
@@ -87,7 +88,7 @@ class CryptoIcon extends StatelessWidget {
       case 'SOL':
         return colors.solana;
       default:
-        return colors.mediumGray;
+        return colors.primary;
     }
   }
 }

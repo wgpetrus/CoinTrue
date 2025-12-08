@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
 import '../../../utils/platform_helper.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Widget de prompt para autenticação biométrica
 /// 
@@ -29,14 +30,14 @@ class BiometricPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final strings = AppConstants.strings;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: colors.white,
+        color: colors.surfaceElevated,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: colors.primary,
@@ -63,7 +64,7 @@ class BiometricPrompt extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
             textAlign: TextAlign.center,
           ),
@@ -74,7 +75,7 @@ class BiometricPrompt extends StatelessWidget {
             PlatformHelper.getBiometricPromptMessage(),
             style: TextStyle(
               fontSize: 14,
-              color: colors.darkGray.withValues(alpha: 0.7),
+              color: colors.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
@@ -88,8 +89,8 @@ class BiometricPrompt extends StatelessWidget {
               onPressed: isAuthenticating ? null : onAuthenticate,
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
-                disabledBackgroundColor: colors.darkGray.withValues(alpha: 0.3),
-                foregroundColor: colors.white,
+                disabledBackgroundColor: colors.onBackground.withValues(alpha: 0.3),
+                foregroundColor: colors.onPrimary,
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -101,7 +102,7 @@ class BiometricPrompt extends StatelessWidget {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(colors.darkGray),
+                        valueColor: AlwaysStoppedAnimation<Color>(colors.onBackground),
                       ),
                     )
                   : Text(
@@ -109,7 +110,7 @@ class BiometricPrompt extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: colors.darkGray,
+                        color: colors.onBackground,
                       ),
                     ),
             ),
@@ -120,7 +121,7 @@ class BiometricPrompt extends StatelessWidget {
           TextButton(
             onPressed: isAuthenticating ? null : onSkip,
             style: TextButton.styleFrom(
-              foregroundColor: colors.darkGray.withValues(alpha: 0.7),
+              foregroundColor: colors.onBackground.withValues(alpha: 0.7),
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             child: Text(
@@ -128,7 +129,7 @@ class BiometricPrompt extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: colors.darkGray.withValues(alpha: 0.7),
+                color: colors.onBackground.withValues(alpha: 0.7),
               ),
             ),
           ),

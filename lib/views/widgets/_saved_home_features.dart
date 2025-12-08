@@ -10,12 +10,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../controllers/controllers.dart';
 import '../../models/models.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_helper.dart';
 
 /// Método para fazer logout
 /// 
 /// Será movido para ProfileScreen na Fase 9
 Future<void> handleLogout(BuildContext context, AuthController authController) async {
-  final colors = AppConstants.colors;
+  final colors = context.colors;
   
   // Confirma logout
   final confirm = await showDialog<bool>(
@@ -56,7 +57,7 @@ Future<void> handleLogout(BuildContext context, AuthController authController) a
 /// 
 /// Será movido para ProfileScreen na Fase 9
 Future<void> handleDeleteAccount(BuildContext context, AuthController authController) async {
-  final colors = AppConstants.colors;
+  final colors = context.colors;
   final user = authController.currentUser;
   
   if (user == null) return;
@@ -155,7 +156,7 @@ Future<void> handleDeleteAccount(BuildContext context, AuthController authContro
 /// 
 /// Será movido para ProfileScreen na Fase 9
 Future<void> handleDisableBiometric(BuildContext context, AuthController authController) async {
-  final colors = AppConstants.colors;
+  final colors = context.colors;
   
   // Confirma desativação
   final confirm = await showDialog<bool>(

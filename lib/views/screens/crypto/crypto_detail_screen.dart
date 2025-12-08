@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../services/crypto/coingecko_api_service.dart';
 import '../../../services/crypto/chart_cache_service.dart';
 import '../../widgets/crypto/crypto_icon.dart';
@@ -127,7 +128,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final priceFormatter = NumberFormat.currency(
       locale: 'pt_BR',
       symbol: 'R\$',
@@ -135,15 +136,15 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
     );
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
           icon: PhosphorIcon(
             PhosphorIcons.arrowLeft(),
             size: 24,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -203,7 +204,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
           textAlign: TextAlign.center,
         ),
@@ -227,7 +228,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           style: TextStyle(
             fontSize: 36,
             fontWeight: FontWeight.bold,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
         ),
         
@@ -278,7 +279,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
         ),
         
@@ -385,7 +386,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
         ),
         
@@ -471,7 +472,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
           ),
         ],
@@ -540,8 +541,8 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
               }
             },
             style: OutlinedButton.styleFrom(
-              foregroundColor: colors.darkGray,
-              side: BorderSide(color: colors.mediumGray),
+              foregroundColor: colors.onBackground,
+              side: BorderSide(color: colors.outline),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),

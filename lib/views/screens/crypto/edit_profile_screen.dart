@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:math';
 import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../models/models.dart';
 import '../../../repositories/repositories.dart';
 
@@ -171,7 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _saveChanges() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final authController = context.read<AuthController>();
     final user = authController.currentUser;
     
@@ -264,28 +265,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final authController = context.watch<AuthController>();
     final user = authController.currentUser;
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
           'Informações Pessoais',
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: PhosphorIcon(
             PhosphorIcons.caretLeft(),
-            color: colors.darkGray,
+            color: colors.onBackground,
             size: 24,
           ),
           onPressed: () => Navigator.pop(context),
@@ -342,7 +343,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: colors.darkGray,
+                          color: colors.onBackground,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: colors.white,
@@ -456,7 +457,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
               ),
               const SizedBox(height: 8),
@@ -492,7 +493,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 style: TextStyle(
                   fontSize: 16,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
                 onChanged: (value) {
                   final formatted = _formatPhone(value);
@@ -513,7 +514,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
               ),
               const SizedBox(height: 8),
@@ -550,7 +551,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: colors.darkGray,
+                                    color: colors.onBackground,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -565,7 +566,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           state,
                                           style: TextStyle(
                                             fontSize: 16,
-                                            color: colors.darkGray,
+                                            color: colors.onBackground,
                                           ),
                                         ),
                                         trailing: _selectedState == state
@@ -620,7 +621,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             color: _selectedState != null
-                                ? colors.darkGray
+                                ? colors.onBackground
                                 : colors.mediumGray,
                           ),
                         ),
@@ -643,7 +644,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
               ),
               const SizedBox(height: 8),
@@ -676,7 +677,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: colors.darkGray,
+                                    color: colors.onBackground,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -685,7 +686,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         occupation,
                                         style: TextStyle(
                                           fontSize: 16,
-                                          color: colors.darkGray,
+                                          color: colors.onBackground,
                                         ),
                                       ),
                                       trailing: _selectedOccupation == occupation
@@ -737,7 +738,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             color: _selectedOccupation != null
-                                ? colors.darkGray
+                                ? colors.onBackground
                                 : colors.mediumGray,
                           ),
                         ),
@@ -811,7 +812,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: colors.darkGray,
+                            color: colors.onBackground,
                           ),
                         ),
                       ],
@@ -840,7 +841,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: colors.darkGray,
+                            color: colors.onBackground,
                             fontFamily: 'monospace',
                             letterSpacing: 1,
                           ),
@@ -916,7 +917,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
         ),
         const SizedBox(height: 8),

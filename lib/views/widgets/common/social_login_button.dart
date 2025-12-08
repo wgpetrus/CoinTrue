@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Enum para identificar o provedor de autenticação social
 enum SocialProvider {
@@ -34,7 +35,7 @@ class SocialLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final strings = AppConstants.strings;
 
     // Determina o texto e logo baseado no provedor
@@ -55,17 +56,15 @@ class SocialLoginButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: colors.white,
-          disabledBackgroundColor: colors.white,
-          foregroundColor: colors.darkGray,
-          disabledForegroundColor: colors.darkGray.withValues(alpha: 0.5),
+          backgroundColor: colors.surfaceElevated,
+          disabledBackgroundColor: colors.surfaceElevated,
+          foregroundColor: colors.onBackground,
+          disabledForegroundColor: colors.onBackground.withValues(alpha: 0.5),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
-              color: isDisabled 
-                  ? const Color(0xFFE0E0E0)
-                  : const Color(0xFFE0E0E0),
+              color: colors.outline,
               width: 1,
             ),
           ),
@@ -101,7 +100,7 @@ class SocialLoginButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -117,7 +116,7 @@ class SocialLoginButton extends StatelessWidget {
       height: 20,
       child: CircularProgressIndicator(
         strokeWidth: 2.5,
-        valueColor: AlwaysStoppedAnimation<Color>(colors.darkGray),
+        valueColor: AlwaysStoppedAnimation<Color>(colors.onBackground),
       ),
     );
   }

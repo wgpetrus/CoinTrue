@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Widget de item de configuração clicável
 /// 
@@ -24,7 +25,7 @@ class ProfileSettingsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Material(
       color: Colors.transparent,
@@ -38,7 +39,7 @@ class ProfileSettingsItem extends StatelessWidget {
               PhosphorIcon(
                 icon,
                 size: 24,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -50,7 +51,7 @@ class ProfileSettingsItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: colors.darkGray,
+                        color: colors.onBackground,
                       ),
                     ),
                     if (subtitle != null) ...[
@@ -59,7 +60,7 @@ class ProfileSettingsItem extends StatelessWidget {
                         subtitle!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: colors.mediumGray,
+                          color: colors.onSurface,
                         ),
                       ),
                     ],
@@ -72,7 +73,7 @@ class ProfileSettingsItem extends StatelessWidget {
                 PhosphorIcon(
                   PhosphorIcons.caretRight(),
                   size: 20,
-                  color: colors.mediumGray,
+                  color: colors.onSurface,
                 ),
             ],
           ),

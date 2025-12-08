@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import 'crypto_icon.dart';
 import '../favorite_button.dart';
 
@@ -26,7 +27,7 @@ class CryptoListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final priceFormatter = NumberFormat.currency(
       locale: 'pt_BR',
       symbol: 'R\$',
@@ -39,15 +40,15 @@ class CryptoListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: colors.white,
+          color: colors.surfaceElevated,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: colors.veryLightGray,
+            color: colors.outline,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: colors.darkGray.withValues(alpha: 0.04),
+              color: colors.shadow,
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -74,7 +75,7 @@ class CryptoListItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: colors.darkGray,
+                      color: colors.onBackground,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -84,7 +85,7 @@ class CryptoListItem extends StatelessWidget {
                     crypto.symbol,
                     style: TextStyle(
                       fontSize: 12,
-                      color: colors.mediumGray,
+                      color: colors.onSurface,
                     ),
                   ),
                 ],
@@ -102,7 +103,7 @@ class CryptoListItem extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: colors.darkGray,
+                    color: colors.onBackground,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -142,7 +143,7 @@ class _PercentageChange extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final isPositive = percentage >= 0;
     final color = isPositive ? colors.success : colors.error;
 

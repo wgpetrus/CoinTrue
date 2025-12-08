@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
 
@@ -81,7 +82,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Preferências salvas!'),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
           ),
         );
       }
@@ -90,7 +91,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao salvar: $e'),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
           ),
         );
       }
@@ -115,7 +116,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text('Permissão de notificações negada'),
-                backgroundColor: AppConstants.colors.error,
+                backgroundColor: context.colors.error,
               ),
             );
           }
@@ -132,21 +133,21 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppConstants.colors.white,
+        backgroundColor: context.colors.background,
         elevation: 0,
         title: Text(
           'Notificações',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppConstants.colors.darkGray,
+            color: context.colors.onBackground,
           ),
         ),
         leading: IconButton(
           icon: PhosphorIcon(
             PhosphorIcons.arrowLeft(),
             size: 24,
-            color: AppConstants.colors.darkGray,
+            color: context.colors.onBackground,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -255,7 +256,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Notificação de teste enviada!'),
-                          backgroundColor: AppConstants.colors.success,
+                          backgroundColor: context.colors.success,
                         ),
                       );
                     }
@@ -273,7 +274,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Verifique o console para ver as notificações'),
-                          backgroundColor: AppConstants.colors.info,
+                          backgroundColor: context.colors.info,
                         ),
                       );
                     }
@@ -292,7 +293,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     required String title,
     required List<Widget> children,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,7 +331,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -347,7 +348,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               child: PhosphorIcon(
                 icon,
                 size: 20,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
             ),
           ),
@@ -361,7 +362,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: colors.darkGray,
+                    color: colors.onBackground,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -390,7 +391,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     required String title,
     required String subtitle,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Opacity(
       opacity: 0.5,
@@ -409,7 +410,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 child: PhosphorIcon(
                   icon,
                   size: 20,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
               ),
             ),
@@ -423,7 +424,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: colors.darkGray,
+                      color: colors.onBackground,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -444,7 +445,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
   
   Widget _buildFrequencySelector() {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -456,7 +457,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
           ),
           const SizedBox(height: 8),
@@ -493,7 +494,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
   
   Widget _buildTimeSelector() {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -505,7 +506,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
           ),
           const SizedBox(height: 8),
@@ -554,7 +555,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
   
   Widget _buildThresholdSelector() {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -566,7 +567,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
           ),
           const SizedBox(height: 8),
@@ -620,7 +621,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     required T groupValue,
     required VoidCallback onTap,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final isSelected = value == groupValue;
     
     return GestureDetector(
@@ -628,7 +629,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? colors.primary : colors.lightGray,
+          color: isSelected ? colors.primary : colors.surface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
@@ -637,7 +638,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: isSelected ? colors.white : colors.darkGray,
+              color: isSelected ? colors.onPrimary : colors.onBackground,
             ),
           ),
         ),
@@ -650,7 +651,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     required String title,
     required VoidCallback onTap,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return InkWell(
       onTap: onTap,
@@ -680,7 +681,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
               ),
             ),

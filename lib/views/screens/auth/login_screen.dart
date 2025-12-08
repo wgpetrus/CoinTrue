@@ -7,6 +7,7 @@ import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
 import '../../../utils/platform_helper.dart';
+import '../../../utils/theme_helper.dart';
 import '../../widgets/widgets.dart';
 import 'email_password_login_screen.dart';
 import 'email_verification_screen.dart';
@@ -141,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   /// Constrói o corpo da tela
   Widget _buildBody(BuildContext context, AuthController authController) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return SafeArea(
       child: LayoutBuilder(
@@ -511,7 +512,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         style: OutlinedButton.styleFrom(
-          backgroundColor: colors.white,
+          backgroundColor: colors.surfaceElevated,
           side: BorderSide(color: const Color(0xFFE0E0E0), width: 1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

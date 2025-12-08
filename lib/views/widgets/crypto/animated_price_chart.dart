@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Gráfico de Preço Animado
 /// 
@@ -33,7 +34,7 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     if (widget.data.isEmpty) {
       return _buildEmptyState(colors);
@@ -86,14 +87,14 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
             PhosphorIcon(
               PhosphorIcons.chartLine(),
               size: 48,
-              color: colors.mediumGray.withOpacity(0.5),
+              color: colors.onSurface.withOpacity(0.5),
             ),
             const SizedBox(height: 12),
             Text(
               'Dados indisponíveis',
               style: TextStyle(
                 fontSize: 14,
-                color: colors.mediumGray,
+                color: colors.onSurface,
               ),
             ),
           ],
@@ -117,7 +118,7 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: colors.darkGray,
+        color: colors.onBackground,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -125,7 +126,7 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: colors.white,
+          color: colors.background,
         ),
       ),
     ).animate()
@@ -143,7 +144,7 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
         horizontalInterval: null,
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: colors.veryLightGray,
+            color: colors.outline,
             strokeWidth: 1,
           );
         },
@@ -169,7 +170,7 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
           return spotIndexes.map((spotIndex) {
             return TouchedSpotIndicatorData(
               FlLine(
-                color: colors.darkGray.withOpacity(0.5),
+                color: colors.onBackground.withOpacity(0.5),
                 strokeWidth: 2,
                 dashArray: [5, 5],
               ),
@@ -177,7 +178,7 @@ class _AnimatedPriceChartState extends State<AnimatedPriceChart> {
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
                     radius: 6,
-                    color: colors.white,
+                    color: colors.background,
                     strokeWidth: 3,
                     strokeColor: lineColor,
                   );

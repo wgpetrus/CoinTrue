@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 
 /// Widget de item de configuração com toggle (switch)
 /// 
@@ -24,7 +25,7 @@ class ProfileSettingsToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -33,7 +34,7 @@ class ProfileSettingsToggle extends StatelessWidget {
           PhosphorIcon(
             icon,
             size: 24,
-            color: colors.darkGray,
+            color: colors.onBackground,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -45,7 +46,7 @@ class ProfileSettingsToggle extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: colors.darkGray,
+                    color: colors.onBackground,
                   ),
                 ),
                 if (subtitle != null) ...[
@@ -54,7 +55,7 @@ class ProfileSettingsToggle extends StatelessWidget {
                     subtitle!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: colors.mediumGray,
+                      color: colors.onSurface,
                     ),
                   ),
                 ],

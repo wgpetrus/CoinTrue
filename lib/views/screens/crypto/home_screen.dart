@@ -6,7 +6,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/constants.dart';
-import '../../../utils/responsive_layout.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../widgets/crypto/crypto_list_item.dart';
@@ -102,7 +102,7 @@ class HomeScreenState extends State<HomeScreen> {
     final cryptoController = context.read<CryptoController>();
     
     // Recarregar apenas top 10 criptos para o Dashboard
-    await cryptoController.loadCryptos(limit: 10, resetTimer: false);
+    await cryptoController.loadHomeCryptos(resetTimer: false);
     
     final userId = authController.currentUser?.id;
     if (userId != null) {
@@ -113,7 +113,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Scaffold(
       body: IndexedStack(
@@ -126,7 +126,7 @@ class HomeScreenState extends State<HomeScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: colors.white,
+              color: colors.surfaceElevated,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               boxShadow: [
                 BoxShadow(
@@ -182,30 +182,39 @@ class HomeScreenState extends State<HomeScreen> {
           // Botão flutuante central sobrepondo
           Positioned(
             top: -28,
-            child: GestureDetector(
-              onTap: () => _showActionsBottomSheet(context),
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [colors.primary, colors.secondary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.primary.withValues(alpha: 0.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  _showActionsBottomSheet(context);
+                },
+                customBorder: const CircleBorder(),
+                splashColor: colors.white.withOpacity(0.3),
+                highlightColor: colors.white.withOpacity(0.1),
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [colors.primary, colors.secondary],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 28,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.primary.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
               ),
             ),
@@ -292,7 +301,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   /// Mostra bottom sheet com opções de ações
   void _showActionsBottomSheet(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     showModalBottomSheet(
       context: context,
@@ -300,7 +309,7 @@ class HomeScreenState extends State<HomeScreen> {
       isScrollControlled: true,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: colors.white,
+          color: colors.surfaceElevated,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           boxShadow: [
             BoxShadow(
@@ -349,7 +358,7 @@ class HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: colors.darkGray,
+                        color: colors.onBackground,
                       ),
                     ),
                     Text(
@@ -439,7 +448,7 @@ class HomeScreenState extends State<HomeScreen> {
     required bool enabled,
     VoidCallback? onTap,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return GestureDetector(
       onTap: enabled ? () {
@@ -504,7 +513,7 @@ class HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: enabled ? colors.darkGray : colors.mediumGray,
+                      color: enabled ? colors.onBackground : colors.mediumGray,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -552,9 +561,9 @@ class HomeScreenState extends State<HomeScreen> {
 
   /// Mostra seletor de cripto para transação (compra/venda)
   void _showCryptoSelectorForTransaction(BuildContext context, TransactionType type) {
-    // Não carrega mais moedas aqui para não sobrescrever a lista da home
-    // O seletor vai usar as moedas já carregadas
-    // Se o usuário quiser ver mais moedas, pode ir na aba Mercados
+    // O seletor usa automaticamente:
+    // - Para COMPRA: Lista completa de mercados (100 moedas)
+    // - Para VENDA: Lista da home (10 moedas) filtrada pelo que o usuário possui
     
     showModalBottomSheet(
       context: context,
@@ -598,7 +607,7 @@ class _DashboardTabState extends State<_DashboardTab> {
     final authController = context.read<AuthController>();
     
     // Carregar apenas top 10 criptos para o Dashboard
-    await cryptoController.loadCryptos(limit: 10);
+    await cryptoController.loadHomeCryptos();
     
     // Carregar carteira e portfólio
     final userId = authController.currentUser?.id;
@@ -610,7 +619,7 @@ class _DashboardTabState extends State<_DashboardTab> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final cryptoController = context.watch<CryptoController>();
     final walletController = context.watch<WalletController>();
     final portfolioController = context.watch<PortfolioController>();
@@ -621,16 +630,16 @@ class _DashboardTabState extends State<_DashboardTab> {
     );
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: _isSelectionMode
             ? IconButton(
                 icon: PhosphorIcon(
                   PhosphorIcons.x(),
                   size: 24,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
                 onPressed: _exitSelectionMode,
               )
@@ -641,7 +650,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: colors.darkGray,
+                  color: colors.onBackground,
                 ),
               )
             : Row(
@@ -675,7 +684,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: colors.darkGray,
+                      color: colors.onBackground,
                     ),
                   ),
                 ],
@@ -697,7 +706,7 @@ class _DashboardTabState extends State<_DashboardTab> {
               icon: PhosphorIcon(
                 PhosphorIcons.bell(),
                 size: 24,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
               onPressed: () {
                 // TODO: Implementar notificações
@@ -708,7 +717,7 @@ class _DashboardTabState extends State<_DashboardTab> {
               icon: PhosphorIcon(
                 PhosphorIcons.gear(),
                 size: 24,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
               onPressed: () {
                 Navigator.push(
@@ -985,7 +994,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: colors.darkGray,
+                                color: colors.onBackground,
                               ),
                             ),
                           ],
@@ -1011,7 +1020,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: colors.darkGray,
+                        color: colors.onBackground,
                       ),
                     ),
                     Row(
@@ -1088,7 +1097,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => cryptoController.loadCryptos(limit: 100),
+                            onPressed: () => cryptoController.loadHomeCryptos(),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
                             ),
@@ -1098,14 +1107,14 @@ class _DashboardTabState extends State<_DashboardTab> {
                       ),
                     ),
                   )
-                else if (cryptoController.cryptos.isNotEmpty)
+                else if (cryptoController.homeCryptos.isNotEmpty)
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: cryptoController.cryptos.length > 10 ? 10 : cryptoController.cryptos.length,
+                    itemCount: cryptoController.homeCryptos.length,
                     separatorBuilder: (context, index) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
-                      final crypto = cryptoController.cryptos[index];
+                      final crypto = cryptoController.homeCryptos[index];
                       final isSelected = _selectedSymbols.contains(crypto.symbol);
                       
                       return GestureDetector(
@@ -1204,7 +1213,7 @@ class _DashboardTabState extends State<_DashboardTab> {
   
   /// Retorna a cor correta para lucro/prejuízo
   Color _getProfitLossColor(PortfolioController controller, AppColors colors) {
-    if (!controller.hasAssets) return colors.darkGray;
+    if (!controller.hasAssets) return colors.onBackground;
     final roundedPL = controller.totalProfitLoss.abs() < 0.01 ? 0.0 : controller.totalProfitLoss;
     return roundedPL >= 0 ? colors.success : colors.error;
   }
@@ -1247,7 +1256,7 @@ class _DashboardTabState extends State<_DashboardTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Faça login para adicionar favoritos'),
-          backgroundColor: AppConstants.colors.error,
+          backgroundColor: context.colors.error,
         ),
       );
       return;
@@ -1263,7 +1272,7 @@ class _DashboardTabState extends State<_DashboardTab> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${_selectedSymbols.length} favorito(s) adicionado(s)'),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
           ),
         );
       }
@@ -1274,7 +1283,7 @@ class _DashboardTabState extends State<_DashboardTab> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Erro ao adicionar favoritos'),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
           ),
         );
       }
@@ -1336,7 +1345,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: colors.darkGray,
+                      color: colors.onBackground,
                     ),
                   ),
                   const SizedBox(height: 4),

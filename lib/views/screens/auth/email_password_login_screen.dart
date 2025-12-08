@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
+import '../../../utils/theme_helper.dart';
 import '../../widgets/widgets.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -54,10 +55,10 @@ class _EmailPasswordLoginScreenState extends State<EmailPasswordLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: PhosphorIcon(
@@ -364,7 +365,7 @@ class _EmailPasswordLoginScreenState extends State<EmailPasswordLoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text('Login realizado com sucesso! Bem-vindo de volta!'),
-                backgroundColor: AppConstants.colors.success,
+                backgroundColor: context.colors.success,
                 duration: const Duration(seconds: 3),
               ),
             );

@@ -8,6 +8,7 @@ import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../repositories/crypto/crypto_repositories.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import 'home_screen.dart';
 
 /// Tela de Atividade (Histórico de Transações)
@@ -128,21 +129,21 @@ class ActivityScreenState extends State<ActivityScreen> with AutomaticKeepAliveC
   Widget build(BuildContext context) {
     super.build(context); // Necessário para AutomaticKeepAliveClientMixin
     
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final cryptoController = context.watch<CryptoController>();
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
           'Atividade',
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: false,
         actions: [
@@ -517,7 +518,7 @@ class _TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final dateFormatter = DateFormat('dd/MM/yyyy HH:mm', 'pt_BR');
 
     return Container(

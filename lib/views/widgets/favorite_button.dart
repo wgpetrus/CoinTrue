@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../controllers/controllers.dart';
 import '../../controllers/controllers.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_helper.dart';
 
 /// Botão de Favorito
 /// 
@@ -77,7 +78,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final favoritesController = context.watch<FavoritesController>();
     final isFavorite = favoritesController.isFavorite(widget.cryptoSymbol);
 
@@ -112,7 +113,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
             size: widget.size,
             color: isFavorite 
               ? (widget.activeColor ?? colors.primaryDark)
-              : (widget.inactiveColor ?? colors.mediumGray),
+              : (widget.inactiveColor ?? colors.onSurface),
           ),
         ),
       ),

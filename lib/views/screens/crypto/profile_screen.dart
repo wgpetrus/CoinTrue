@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../onboarding/biometric_setup_screen.dart';
 import '../auth/login_screen.dart';
 import 'edit_profile_screen.dart';
@@ -15,6 +16,7 @@ import '../../../repositories/repositories.dart';
 import '../../../services/services.dart';
 import '../../widgets/profile/profile_settings_item.dart';
 import '../../widgets/profile/profile_settings_toggle.dart';
+import '../../widgets/common/theme_toggle.dart';
 import '../../widgets/profile_avatar.dart';
 
 /// Tela de Perfil/Configurações
@@ -65,22 +67,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final authController = context.watch<AuthController>();
     final user = authController.currentUser;
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
           'Perfil',
           style: TextStyle(
-            color: colors.darkGray,
+            color: colors.onBackground,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: true,
       ),
@@ -211,19 +213,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _showComingSoon(context);
                   },
                 ),
-                ProfileSettingsItem(
-                  icon: PhosphorIcons.palette(),
-                  title: 'Tema',
-                  trailing: Text(
-                    'Claro',
-                    style: TextStyle(
-                      color: colors.mediumGray,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  onTap: () {
-                    _showComingSoon(context);
+                Consumer<ThemeController>(
+                  builder: (context, themeController, child) {
+                    return ProfileSettingsItem(
+                      icon: PhosphorIcons.palette(),
+                      title: 'Tema',
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            themeController.getThemeModeName(),
+                            style: TextStyle(
+                              color: colors.mediumGray,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          PhosphorIcon(
+                            themeController.getThemeModeIcon(),
+                            size: 16,
+                            color: colors.primary,
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        _showThemeSelector(context);
+                      },
+                    );
                   },
                 ),
                 ProfileSettingsItem(
@@ -390,7 +407,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Upload de fotos disponível em breve! 📸'),
-                  backgroundColor: AppConstants.colors.info,
+                  backgroundColor: context.colors.info,
                   duration: const Duration(seconds: 3),
                 ),
               );
@@ -440,7 +457,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Botão Editar Perfil
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colors.surfaceElevated,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -502,7 +519,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     required List<Widget> items,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,9 +538,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         Container(
           decoration: BoxDecoration(
-            color: colors.white,
+            color: colors.surfaceElevated,
             border: Border.all(
-              color: colors.veryLightGray,
+              color: colors.outline,
               width: 1,
             ),
             borderRadius: BorderRadius.circular(16),
@@ -555,7 +572,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showChangePasswordDialog(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
@@ -737,7 +754,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: colors.primary,
-              foregroundColor: colors.white,
+              foregroundColor: colors.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -749,8 +766,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showThemeSelector(BuildContext context) {
+    final colors = context.colors;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Indicador
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colors.mediumGray.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Título
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: PhosphorIcon(
+                    PhosphorIcons.palette(PhosphorIconsStyle.fill),
+                    size: 24,
+                    color: colors.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tema do Aplicativo',
+                      style: TextStyle(
+                        color: colors.onBackground,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Escolha como o app deve aparecer',
+                      style: TextStyle(
+                        color: colors.mediumGray,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            
+            // Toggle de tema
+            const ThemeToggle(
+              style: ThemeToggleStyle.list,
+              showLabel: false,
+            ),
+            
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showComingSoon(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -772,7 +871,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showLogoutDialog(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     showDialog(
       context: context,
@@ -833,7 +932,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _showPasswordDialog(BuildContext context) async {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final passwordController = TextEditingController();
     
     final confirmed = await showDialog<bool>(
@@ -911,7 +1010,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _authenticateWithBiometric(BuildContext context) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final authController = context.read<AuthController>();
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     try {
       final authenticated = await authController.biometricService.authenticate(
@@ -958,7 +1057,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onWillPop: () async => false,
         child: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppConstants.colors.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(context.colors.primary),
           ),
         ),
       ),
@@ -1009,7 +1108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   
   void _showDeleteAccountDialog(BuildContext context) async {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     // Validação de saldo
     final walletController = context.read<WalletController>();
@@ -1187,7 +1286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// Mostra opções para selecionar foto de perfil
   void _showImagePickerOptions(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     
     showModalBottomSheet(
       context: context,
@@ -1218,7 +1317,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: colors.darkGray,
+                color: colors.onBackground,
               ),
             ),
             const SizedBox(height: 24),
@@ -1263,7 +1362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required VoidCallback onTap,
     Color? color,
   }) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final optionColor = color ?? colors.primary;
     
     return InkWell(
@@ -1313,7 +1412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: colors.darkGray,
+                      color: colors.onBackground,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -1361,7 +1460,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(
                 'Processando imagem...',
                 style: TextStyle(
-                  color: AppConstants.colors.darkGray,
+                  color: context.colors.onBackground,
                   fontSize: 14,
                 ),
               ),
@@ -1393,7 +1492,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Foto de perfil atualizada!'),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -1411,7 +1510,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
               label: 'OK',
@@ -1457,14 +1556,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Foto de perfil removida!'),
-              backgroundColor: AppConstants.colors.success,
+              backgroundColor: context.colors.success,
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Erro ao remover foto de perfil'),
-              backgroundColor: AppConstants.colors.error,
+              backgroundColor: context.colors.error,
             ),
           );
         }
@@ -1475,7 +1574,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro: $e'),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
           ),
         );
       }

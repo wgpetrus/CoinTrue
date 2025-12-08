@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/controllers.dart';
 import '../../utils/constants.dart';
+import '../../utils/theme_helper.dart';
 
 /// Avatar de Perfil Reutilizável
 /// 
@@ -25,7 +26,7 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final authController = context.watch<AuthController>();
     final user = authController.currentUser;
 
@@ -39,12 +40,12 @@ class ProfileAvatar extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: showBorder ? Border.all(
-                color: colors.white,
+                color: colors.background,
                 width: 3,
               ) : null,
               boxShadow: showBorder ? [
                 BoxShadow(
-                  color: colors.darkGray.withOpacity(0.2),
+                  color: colors.shadow,
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -68,7 +69,7 @@ class ProfileAvatar extends StatelessWidget {
                   color: colors.primary,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: colors.white,
+                    color: colors.background,
                     width: 2,
                   ),
                 ),
@@ -76,7 +77,7 @@ class ProfileAvatar extends StatelessWidget {
                   child: PhosphorIcon(
                     PhosphorIcons.pencilSimple(PhosphorIconsStyle.bold),
                     size: size * 0.15,
-                    color: colors.white,
+                    color: colors.onPrimary,
                   ),
                 ),
               ),
@@ -125,7 +126,7 @@ class ProfileAvatar extends StatelessWidget {
           style: TextStyle(
             fontSize: size * 0.4,
             fontWeight: FontWeight.bold,
-            color: colors.white,
+            color: colors.onPrimary,
           ),
         ),
       ),

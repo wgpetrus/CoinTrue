@@ -6,6 +6,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../onboarding/onboarding_screen.dart';
 
 /// Tela de Verificação de Email
@@ -98,7 +99,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Email de verificação reenviado!'),
-            backgroundColor: AppConstants.colors.success,
+            backgroundColor: context.colors.success,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -118,7 +119,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao reenviar email: $e'),
-            backgroundColor: AppConstants.colors.error,
+            backgroundColor: context.colors.error,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -132,12 +133,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final authController = context.watch<AuthController>();
     final userEmail = authController.currentUser?.email ?? '';
 
     return Scaffold(
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),

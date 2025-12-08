@@ -7,6 +7,7 @@ import 'dart:math';
 import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/formatters.dart';
+import '../../../utils/theme_helper.dart';
 import '../../../models/models.dart';
 import '../../../repositories/repositories.dart';
 
@@ -99,12 +100,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     return Stack(
       children: [
         Scaffold(
-          backgroundColor: colors.white,
+          backgroundColor: colors.background,
           appBar: AppBar(
         title: const Text('Complete seu Perfil'),
         leading: IconButton(
@@ -551,7 +552,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: ElevatedButton(
                     onPressed: _acceptedTerms ? _handleContinue : null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
+                      foregroundColor: colors.onPrimary,
                     ),
                     child: const Text('Continuar'),
                   ),
@@ -574,7 +575,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 40),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: colors.white,
+                  color: colors.surfaceElevated,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
@@ -702,13 +703,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Preencha todos os campos obrigatórios'),
-          backgroundColor: AppConstants.colors.error,
+          backgroundColor: context.colors.error,
         ),
       );
       return;
     }
 
-    final colors = AppConstants.colors;
+    final colors = context.colors;
 
     setState(() => _isLoading = true);
 

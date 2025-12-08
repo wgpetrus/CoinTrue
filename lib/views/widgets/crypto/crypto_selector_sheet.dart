@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
 import '../../../models/crypto/crypto_models.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/theme_helper.dart';
 import '../../screens/crypto/transaction_screen.dart';
 
 /// Bottom Sheet para seleção de cripto (compra/venda)
@@ -36,12 +37,18 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppConstants.colors;
+    final colors = context.colors;
     final cryptoController = context.watch<CryptoController>();
     final portfolioController = context.watch<PortfolioController>();
     
     // Filtrar criptos baseado no tipo de transação e pesquisa
-    final filteredCryptos = cryptoController.cryptos.where((crypto) {
+    // Para compra, usar lista completa de mercados (100 moedas)
+    // Para venda, usar lista da home (10 moedas) já que só mostra o que possui
+    final cryptosToUse = widget.type == TransactionType.buy 
+        ? cryptoController.marketsCryptos 
+        : cryptoController.homeCryptos;
+        
+    final filteredCryptos = cryptosToUse.where((crypto) {
       // Para venda, mostrar apenas criptos que possuo
       if (widget.type == TransactionType.sell) {
         final hasAsset = portfolioController.assets.any((asset) => 
@@ -60,7 +67,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
-        color: colors.white,
+        color: colors.background,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -89,7 +96,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: colors.lightGray,
+              color: colors.outline,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -103,7 +110,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: colors.darkGray,
+              color: colors.onBackground,
             ),
           ),
           const SizedBox(height: 4),
@@ -137,7 +144,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
         controller: _searchController,
         style: TextStyle(
           fontSize: 16,
-          color: colors.darkGray,
+          color: colors.onBackground,
         ),
         decoration: InputDecoration(
           hintText: 'Pesquisar criptomoeda...',
@@ -258,7 +265,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: colors.white,
+              color: colors.surfaceElevated,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: colors.veryLightGray,
@@ -281,7 +288,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: colors.darkGray,
+                          color: colors.onBackground,
                         ),
                       ),
                       Text(
@@ -315,7 +322,7 @@ class _CryptoSelectorSheetState extends State<CryptoSelectorSheet> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: colors.darkGray,
+                        color: colors.onBackground,
                       ),
                     ),
                   ],
