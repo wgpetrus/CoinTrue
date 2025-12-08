@@ -84,21 +84,6 @@ Os seguintes arquivos foram **removidos do histórico** e agora estão no `.giti
    - Secrets do CI/CD
    - Firebase Remote Config para configs dinâmicas
 
-3. **Revisar antes de commitar:**
-   ```bash
-   git diff --cached
-   ```
-
-4. **Se commitou algo sensível por engano:**
-   ```bash
-   # Remover do último commit
-   git rm --cached arquivo_sensivel.json
-   git commit --amend
-   
-   # Se já fez push, precisa reescrever histórico (cuidado!)
-   # Melhor: revogar as credenciais e gerar novas
-   ```
-
 ## 📚 Referências
 
 - [Firebase Security Best Practices](https://firebase.google.com/support/guides/security-checklist)
