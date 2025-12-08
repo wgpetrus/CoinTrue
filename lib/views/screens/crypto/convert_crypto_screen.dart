@@ -5,9 +5,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../utils/constants.dart';
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
-import '../../../models/crypto/crypto.dart';
+import '../../../models/crypto/crypto_models.dart';
 import '../../widgets/widgets.dart';
 
 /// Tela de Conversão de Criptomoedas

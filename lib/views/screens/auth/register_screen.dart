@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../widgets/widgets.dart';
 import 'email_verification_screen.dart';
@@ -371,7 +371,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ? null
                       : () => _handleRegister(authController),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: colors.darkGray,
+                    foregroundColor: Colors.white,
                   ),
                   child: const Text('Criar Conta'),
                 ),

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:faker/faker.dart';
-import 'package:login/controllers/auth_controller.dart';
-import 'package:login/models/user.dart';
+import 'package:login/controllers/controllers.dart';
+import 'package:login/models/models.dart';
 import 'package:login/models/exceptions.dart';
 import 'package:login/utils/platform_helper.dart';
 

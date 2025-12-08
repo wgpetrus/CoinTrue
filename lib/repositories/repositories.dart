@@ -3,9 +3,16 @@
 /// This file provides convenient access to all repository interfaces
 /// and implementations in the application.
 
-// User repositories
-export 'user_repository.dart';
-export 'firebase_user_repository.dart';
+// Auth repositories
+export 'auth/user_repository.dart';
+export 'auth/firebase_user_repository.dart';
+export 'auth/user_profile_repository.dart';
+
+// Notification repositories
+export 'notification/notification_preferences_repository.dart';
+
+// Favorites repositories
+export 'favorites/favorites_repository.dart';
 
 // Crypto repositories
 export 'crypto/crypto_repositories.dart';

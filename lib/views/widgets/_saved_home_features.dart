@@ -7,8 +7,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../controllers/auth_controller.dart';
-import '../../models/user.dart';
+import '../../controllers/controllers.dart';
+import '../../models/models.dart';
 import '../../utils/constants.dart';
 
 /// Método para fazer logout

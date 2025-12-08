@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:login/controllers/crypto/crypto_controllers.dart';
 import 'package:login/repositories/crypto/crypto_repositories.dart';
 import 'package:login/models/crypto/crypto_models.dart' hide Transaction;
-import 'package:login/models/crypto/transaction.dart' as crypto_transaction;
+import 'package:login/models/crypto/transaction_model.dart' as crypto_transaction;
 
 typedef Transaction = crypto_transaction.Transaction;
 

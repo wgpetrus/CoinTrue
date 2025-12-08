@@ -7,22 +7,17 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'core/config/firebase_options.dart';
-import 'controllers/auth_controller.dart';
+import 'controllers/controllers.dart';
 import 'controllers/crypto/crypto_controllers.dart';
-import 'controllers/notification_controller.dart';
-import 'controllers/favorites_controller.dart';
 import 'services/services.dart';
 import 'services/crypto/crypto_services.dart';
-import 'services/notification_service.dart';
-import 'services/fcm_service.dart';
 import 'repositories/repositories.dart';
-import 'repositories/notification_preferences_repository.dart';
-import 'repositories/favorites_repository.dart';
+import 'repositories/crypto/crypto_repositories.dart';
 import 'views/screens/screens.dart';
 import 'utils/constants.dart';
 import 'utils/https_validator.dart';
 import 'utils/error_handler.dart';
-import 'models/user.dart';
+import 'models/models.dart';
 
 void main() async {
   // Initialize comprehensive error logging

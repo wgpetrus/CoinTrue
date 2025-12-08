@@ -3,12 +3,10 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:faker/faker.dart';
 
-import 'package:login/controllers/auth_controller.dart';
-import 'package:login/services/auth_service.dart';
-import 'package:login/services/biometric_service.dart';
-import 'package:login/services/preferences_service.dart';
-import 'package:login/repositories/user_repository.dart';
-import 'package:login/models/user.dart';
+import 'package:login/controllers/controllers.dart';
+import 'package:login/services/services.dart';
+import 'package:login/repositories/repositories.dart';
+import 'package:login/models/models.dart';
 import 'package:login/models/exceptions.dart';
 import 'package:login/utils/platform_helper.dart';
 import 'package:login/utils/rate_limiter.dart';

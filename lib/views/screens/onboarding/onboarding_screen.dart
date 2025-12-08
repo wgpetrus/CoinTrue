@@ -4,11 +4,11 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/formatters.dart';
-import '../../../models/user_profile.dart';
-import '../../../repositories/user_profile_repository.dart';
+import '../../../models/models.dart';
+import '../../../repositories/repositories.dart';
 
 /// Tela de Onboarding - Coleta informações adicionais do usuário
 /// 
@@ -551,7 +551,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: ElevatedButton(
                     onPressed: _acceptedTerms ? _handleContinue : null,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: colors.darkGray,
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text('Continuar'),
                   ),

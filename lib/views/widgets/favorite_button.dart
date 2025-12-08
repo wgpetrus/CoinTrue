@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../controllers/favorites_controller.dart';
-import '../../controllers/auth_controller.dart';
+import '../../controllers/controllers.dart';
+import '../../controllers/controllers.dart';
 import '../../utils/constants.dart';
 
 /// Botão de Favorito

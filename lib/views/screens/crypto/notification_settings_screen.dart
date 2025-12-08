@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/constants.dart';
-import '../../../controllers/notification_controller.dart';
-import '../../../controllers/auth_controller.dart';
-import '../../../models/notification_preferences.dart';
+import '../../../controllers/controllers.dart';
+import '../../../models/models.dart';
 
 /// Tela de Configurações de Notificações
 /// 

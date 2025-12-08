@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/asset_loader.dart';
 import '../../widgets/widgets.dart';
@@ -259,7 +259,7 @@ class _EmailPasswordLoginScreenState extends State<EmailPasswordLoginScreen> {
                       ? null
                       : () => _handleLogin(authController),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: colors.darkGray,
+                    foregroundColor: Colors.white,
                   ),
                   child: const Text('Entrar'),
                 ),

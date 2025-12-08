@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/crypto/crypto_models.dart' hide Transaction;
-import '../../models/crypto/transaction.dart' as crypto_transaction;
+import '../../models/crypto/transaction_model.dart' as crypto_transaction;
 import 'wallet_repository.dart';
 
 /// Implementação do repositório de carteira usando Firestore

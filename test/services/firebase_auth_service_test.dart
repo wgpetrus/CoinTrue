@@ -6,8 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 
-import 'package:login/services/firebase_auth_service.dart';
-import 'package:login/models/user.dart';
+import 'package:login/services/services.dart';
+import 'package:login/models/models.dart';
 import 'package:login/models/exceptions.dart';
 
 import 'firebase_auth_service_test.mocks.dart';

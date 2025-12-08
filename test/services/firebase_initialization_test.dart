@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:faker/faker.dart';
 
-import 'package:login/services/auth_service.dart';
-import 'package:login/repositories/user_repository.dart';
-import 'package:login/models/user.dart';
+import 'package:login/services/services.dart';
+import 'package:login/repositories/repositories.dart';
+import 'package:login/models/models.dart';
 
 void main() {
   late Faker faker;

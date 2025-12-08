@@ -7,9 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/responsive_layout.dart';
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../controllers/crypto/crypto_controllers.dart';
-import '../../../controllers/favorites_controller.dart';
 import '../../widgets/crypto/crypto_list_item.dart';
 import '../../widgets/crypto/crypto_selector_sheet.dart';
 import 'markets_screen.dart';
@@ -19,7 +18,7 @@ import 'crypto_detail_screen.dart';
 import 'profile_screen.dart';
 import 'convert_crypto_screen.dart';
 import 'favorites_screen.dart';
-import '../../../models/crypto/transaction.dart';
+import '../../../models/crypto/crypto_models.dart';
 
 /// Home Screen - Tela principal após login
 /// 
@@ -1090,6 +1089,9 @@ class _DashboardTabState extends State<_DashboardTab> {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => cryptoController.loadCryptos(limit: 100),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                            ),
                             child: const Text('Tentar Novamente'),
                           ),
                         ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
 import '../../widgets/widgets.dart';
 
@@ -195,7 +195,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ? null
                         : () => _handleSendEmail(authController),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: colors.darkGray,
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text('Enviar Link de Recuperação'),
                   ),
@@ -210,7 +210,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: colors.darkGray,
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text('Voltar ao Login'),
                   ),

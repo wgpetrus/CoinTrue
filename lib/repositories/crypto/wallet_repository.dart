@@ -1,5 +1,5 @@
 import '../../models/crypto/crypto_models.dart' hide Transaction;
-import '../../models/crypto/transaction.dart' as crypto_transaction;
+import '../../models/crypto/transaction_model.dart' as crypto_transaction;
 
 /// Interface do repositório de carteira
 /// 

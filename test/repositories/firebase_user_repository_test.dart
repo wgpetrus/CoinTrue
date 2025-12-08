@@ -4,8 +4,8 @@ import 'package:mockito/annotations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 
-import 'package:login/repositories/firebase_user_repository.dart';
-import 'package:login/models/user.dart';
+import 'package:login/repositories/repositories.dart';
+import 'package:login/models/models.dart';
 import 'package:login/models/exceptions.dart';
 
 import 'firebase_user_repository_test.mocks.dart';

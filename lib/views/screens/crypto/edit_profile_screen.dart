@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:math';
-import '../../../controllers/auth_controller.dart';
+import '../../../controllers/controllers.dart';
 import '../../../utils/constants.dart';
-import '../../../models/user_profile.dart';
-import '../../../repositories/user_profile_repository.dart';
+import '../../../models/models.dart';
+import '../../../repositories/repositories.dart';
 
 /// Tela de Visualização/Edição de Informações Pessoais
 /// 

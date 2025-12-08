@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../lib/main.dart';
-import '../../lib/services/shared_preferences_service.dart';
+import '../../lib/services/services.dart';
 import '../../lib/utils/asset_loader.dart';
 import '../../lib/views/screens/onboarding/splash_screen.dart';
 

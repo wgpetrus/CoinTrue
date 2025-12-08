@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../models/crypto/crypto_models.dart';
 import 'crypto_api_service.dart';
-import '../exchange_rate_service.dart';
+import '../common/exchange_rate_service.dart';
 
 /// Implementação do serviço de API usando CoinGecko
 /// 

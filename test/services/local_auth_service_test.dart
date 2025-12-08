@@ -5,9 +5,8 @@ import 'package:local_auth/local_auth.dart' as local_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:faker/faker.dart';
 
-import 'package:login/services/local_auth_service.dart';
-import 'package:login/services/biometric_service.dart' as app_biometric;
-import 'package:login/models/exceptions.dart';
+import 'package:login/services/services.dart';
+import 'package:login/models/models.dart';
 
 import 'local_auth_service_test.mocks.dart';
 

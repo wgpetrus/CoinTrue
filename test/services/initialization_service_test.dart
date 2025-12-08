@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:faker/faker.dart';
 import 'dart:async';
 
-import 'package:login/services/initialization_service.dart';
-import 'package:login/models/initialization_state.dart';
+import 'package:login/services/services.dart';
+import 'package:login/models/models.dart';
 
 void main() {
   late Faker faker;
